@@ -61,21 +61,53 @@ const crawler = new CheerioCrawler({
                 const jobs = department.jobs || [];
                 
                 for (const job of jobs) {
-                    const jobData = {
-                        id: job.id,
-                        type: job.metadata?.find(m => m.name === 'Employment Type')?.value || null,
-                        title: job.title,
-                        description: job.content || '',
-                        locations: job.location?.name ? [job.location.name] : [],
-                        department: department.name,
-                        departments: [department.name], // Job belongs to this department
-                        postingUrl: job.absolute_url,
-                        applyUrl: job.absolute_url,
-                        publishedAt: job.updated_at,
-                    };
+                    // Fetch full job details to get description and metadata
+                    const jobDetailUrl = `https://boards-api.greenhouse.io/v1/boards/${boardToken}/jobs/${job.id}`;
+                    log.debug(`Fetching full details for job ${job.id}: ${job.title}`);
+                    
+                    try {
+                        const jobResponse = await fetch(jobDetailUrl);
+                        if (!jobResponse.ok) {
+                            log.warning(`Failed to fetch details for job ${job.id}, using basic data`);
+                            // Fallback to basic data if detail fetch fails
+                            const jobData = {
+                                id: job.id,
+                                type: null,
+                                title: job.title,
+                                description: '',
+                                locations: job.location?.name ? [job.location.name] : [],
+                                department: department.name,
+                                departments: [department.name],
+                                postingUrl: job.absolute_url,
+                                applyUrl: job.absolute_url,
+                                publishedAt: job.updated_at,
+                            };
+                            await Actor.pushData(jobData);
+                            totalJobs++;
+                            continue;
+                        }
+                        
+                        const fullJob = await jobResponse.json();
+                        
+                        const jobData = {
+                            id: job.id,
+                            type: fullJob.metadata?.find(m => m.name === 'Employment Type')?.value_text || null,
+                            title: job.title,
+                            description: fullJob.content || '',
+                            locations: job.location?.name ? [job.location.name] : [],
+                            department: department.name,
+                            departments: [department.name],
+                            postingUrl: job.absolute_url,
+                            applyUrl: job.absolute_url,
+                            publishedAt: job.updated_at,
+                        };
 
-                    await Actor.pushData(jobData);
-                    totalJobs++;
+                        await Actor.pushData(jobData);
+                        totalJobs++;
+                    } catch (err) {
+                        log.error(`Error fetching details for job ${job.id}: ${err.message}`);
+                        // Continue with next job instead of failing entire run
+                    }
                 }
             }
 
