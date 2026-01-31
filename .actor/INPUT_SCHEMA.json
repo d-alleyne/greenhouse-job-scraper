@@ -13,6 +13,7 @@
                 "properties": {
                     "url": {
                         "type": "string",
+                        "title": "URL",
                         "editor": "textfield",
                         "pattern": "https://job-boards\\.greenhouse\\.io/.*"
                     }
