@@ -17,14 +17,14 @@ const proxyConfiguration = proxy.useApifyProxy
 const crawler = new CheerioCrawler({
     proxyConfiguration,
     maxRequestsPerCrawl: 1000,
-    async requestHandler({ request, $ }) {
+    async requestHandler({ request, $, log }) {
         const url = new URL(request.url);
         
         // Extract board token from URL (e.g., "webflow" from job-boards.greenhouse.io/webflow)
         const boardToken = url.pathname.split('/')[1];
         
         if (!boardToken) {
-            Actor.log.error(`Could not extract board token from URL: ${request.url}`);
+            log.error(`Could not extract board token from URL: ${request.url}`);
             return;
         }
 
@@ -35,7 +35,7 @@ const crawler = new CheerioCrawler({
         const departmentIds = url.searchParams.getAll('departments[]');
         const departmentIdNumbers = departmentIds.map(id => parseInt(id, 10));
         
-        Actor.log.info(`Fetching jobs from ${boardToken}`, { departmentIds });
+        log.info(`Fetching jobs from ${boardToken}`, { departmentIds });
 
         try {
             // Fetch departments and their jobs from Greenhouse API
@@ -47,12 +47,12 @@ const crawler = new CheerioCrawler({
             const data = await response.json();
             let departments = data.departments || [];
 
-            Actor.log.info(`Found ${departments.length} departments`);
+            log.info(`Found ${departments.length} departments`);
 
             // Filter departments if specified
             if (departmentIdNumbers.length > 0) {
                 departments = departments.filter(dept => departmentIdNumbers.includes(dept.id));
-                Actor.log.info(`Filtered to ${departments.length} departments matching IDs: ${departmentIds.join(', ')}`);
+                log.info(`Filtered to ${departments.length} departments matching IDs: ${departmentIds.join(', ')}`);
             }
 
             // Extract and save all jobs from the (filtered) departments
@@ -79,9 +79,9 @@ const crawler = new CheerioCrawler({
                 }
             }
 
-            Actor.log.info(`Saved ${totalJobs} jobs to dataset`);
+            log.info(`Saved ${totalJobs} jobs to dataset`);
         } catch (error) {
-            Actor.log.error(`Failed to fetch jobs for ${boardToken}: ${error.message}`);
+            log.error(`Failed to fetch jobs for ${boardToken}: ${error.message}`);
             throw error;
         }
     },
