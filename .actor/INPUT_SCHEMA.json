@@ -4,16 +4,20 @@
     "schemaVersion": 1,
     "properties": {
         "urls": {
-            "title": "Greenhouse Job Board URLs",
+            "title": "URLs",
             "type": "array",
             "description": "One or more Greenhouse job board URLs to scrape. You can include department filters in the URL (e.g., https://job-boards.greenhouse.io/webflow?departments[]=59798)",
-            "editor": "json",
+            "editor": "requestListSources",
+            "placeholderKey": "url",
+            "placeholderValue": "https://job-boards.greenhouse.io/",
+            "patternKey": "url",
+            "patternValue": "https://job-boards\\.greenhouse\\.io/.+",
             "prefill": [
                 { "url": "https://job-boards.greenhouse.io/webflow" }
             ]
         },
         "proxy": {
-            "title": "Proxy Configuration",
+            "title": "Proxy configuration",
             "type": "object",
             "description": "Proxy settings for the crawler",
             "editor": "proxy",
