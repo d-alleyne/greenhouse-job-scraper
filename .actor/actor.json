@@ -3,7 +3,7 @@
     "name": "greenhouse-job-scraper",
     "title": "Greenhouse Job Scraper",
     "description": "Scrape Greenhouse job boards with department filtering support. Extract job listings, requirements, benefits, and application details. Open source alternative with department filter support.",
-    "version": "1.0.0",
+    "version": "1.0",
     "license": "MIT",
     "dockerfile": "./Dockerfile",
     "readme": "./README.md",
