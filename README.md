@@ -127,4 +127,4 @@ MIT
 
 ## Author
 
-Built by Damien Alleyne for personal use and potential passive income 🚀
+Built by [Damien Alleyne](https://alleyne.dev)

@@ -90,7 +90,6 @@ If you make this public on Apify Store:
 - **Pricing**: $2/1000 jobs (standard market rate)
 - **Market**: Anyone needing department filtering
 - **Advantage**: Open source + department filtering = unique value prop
-- **Passive income**: Set it and forget it
 
 ## Testing Results
 
