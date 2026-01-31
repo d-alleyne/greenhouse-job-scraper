@@ -80,8 +80,8 @@ Once deployed to Apify, update your job scraping config to use the custom actor:
 // Before (BytePulse Labs actor - no department filtering)
 const actor = 'bytepulselabs/greenhouse-job-scraper';
 
-// After (your custom actor - with department filtering)
-const actor = 'YOUR_USERNAME/greenhouse-job-scraper-custom';
+// After (your open source actor - with department filtering)
+const actor = 'dalleyne/greenhouse-job-scraper';
 
 // Now you can use department filters in URLs
 const input = {

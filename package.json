@@ -1,16 +1,20 @@
 {
-  "name": "greenhouse-job-scraper-custom",
+  "name": "greenhouse-job-scraper",
   "version": "1.0.0",
-  "description": "Custom Greenhouse Job Scraper with department filtering support",
+  "description": "Open source Greenhouse Job Scraper with department filtering support",
   "type": "module",
   "main": "src/main.js",
   "scripts": {
     "start": "node src/main.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "keywords": ["apify", "greenhouse", "jobs", "scraper"],
-  "author": "Damien Alleyne",
+  "keywords": ["apify", "greenhouse", "jobs", "scraper", "ats", "department-filter"],
+  "author": "Damien Alleyne <damien@alleyne.dev>",
   "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/dalleyne/greenhouse-job-scraper.git"
+  },
   "dependencies": {
     "apify": "^3.5.3",
     "crawlee": "^3.15.3",

@@ -1,9 +1,0 @@
-{
-	"id": "J7DXH1tJnGcNV3M",
-	"json": "{\"id\":\"J7DXH1tJnGcNV3M\",\"url\":\"https://job-boards.greenhouse.io/webflow?departments[]=59798\",\"uniqueKey\":\"https://job-boards.greenhouse.io/webflow?departments%5B%5D=59798\",\"method\":\"GET\",\"noRetry\":false,\"retryCount\":0,\"errorMessages\":[],\"headers\":{},\"userData\":{}}",
-	"method": "GET",
-	"orderNo": 1769878645116,
-	"retryCount": 0,
-	"uniqueKey": "https://job-boards.greenhouse.io/webflow?departments%5B%5D=59798",
-	"url": "https://job-boards.greenhouse.io/webflow?departments[]=59798"
-}

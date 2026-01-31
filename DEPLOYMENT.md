@@ -29,7 +29,7 @@ This will:
 ### Via Apify Console
 
 1. Go to https://console.apify.com/actors
-2. Find "greenhouse-job-scraper-custom"
+2. Find "greenhouse-job-scraper"
 3. Click on it
 4. Add this input:
 
@@ -59,7 +59,7 @@ const client = new ApifyClient({
     token: process.env.APIFY_API_TOKEN,
 });
 
-const run = await client.actor('YOUR_USERNAME/greenhouse-job-scraper-custom').call({
+const run = await client.actor('dalleyne/greenhouse-job-scraper').call({
     urls: [
         { url: 'https://job-boards.greenhouse.io/webflow?departments[]=59798' }
     ],
@@ -77,7 +77,7 @@ console.log(items); // Array of jobs
 In your global-dev-flow project, update the Apify Actor ID to use your custom one instead of BytePulse Labs':
 
 Replace: `bytepulselabs/greenhouse-job-scraper`  
-With: `YOUR_USERNAME/greenhouse-job-scraper-custom`
+With: `dalleyne/greenhouse-job-scraper`
 
 ## Monetization (Optional)
 

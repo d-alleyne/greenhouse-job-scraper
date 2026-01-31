@@ -1,18 +1,22 @@
-# Greenhouse Job Scraper (Custom)
+# Greenhouse Job Scraper
 
-A custom Apify Actor that scrapes Greenhouse job boards with **department filtering support**.
+[![Apify Actor](https://img.shields.io/badge/Apify-Actor-blue)](https://apify.com/dalleyne/greenhouse-job-scraper)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+
+An **open source** Apify Actor that scrapes Greenhouse job boards with **department filtering support**.
 
 ## Features
 
 - ✅ Scrape job listings from any Greenhouse job board
 - ✅ **Filter by department** using URL parameters (e.g., `?departments[]=59798`)
 - ✅ Export data in JSON, CSV, XML, Excel, or HTML
-- ✅ Same output format as the official BytePulse Labs actor
+- ✅ Same output format as popular Greenhouse scrapers
 - ✅ Built with Apify SDK and Crawlee
+- ✅ 100% open source
 
 ## Why This Exists
 
-The official [BytePulse Labs Greenhouse Job Scraper](https://apify.com/bytepulselabs/greenhouse-job-scraper) doesn't support filtering by department, even though Greenhouse's URLs support it. This custom actor fills that gap.
+The official [BytePulse Labs Greenhouse Job Scraper](https://apify.com/bytepulselabs/greenhouse-job-scraper) doesn't support filtering by department, even though Greenhouse's URLs support it. This open source alternative fills that gap.
 
 ## Input
 
@@ -79,7 +83,7 @@ apify run -p
 ### Via API
 
 ```bash
-curl -X POST https://api.apify.com/v2/acts/YOUR_USERNAME~greenhouse-job-scraper-custom/runs \
+curl -X POST https://api.apify.com/v2/acts/dalleyne~greenhouse-job-scraper/runs \
   -H "Authorization: Bearer YOUR_API_TOKEN" \
   -H "Content-Type: application/json" \
   -d '{
