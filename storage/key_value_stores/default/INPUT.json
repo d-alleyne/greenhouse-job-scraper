@@ -1,0 +1,8 @@
+{
+  "urls": [
+    { "url": "https://job-boards.greenhouse.io/webflow?departments[]=59798" }
+  ],
+  "proxy": {
+    "useApifyProxy": false
+  }
+}

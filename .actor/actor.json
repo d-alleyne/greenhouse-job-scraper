@@ -1,0 +1,12 @@
+{
+    "actorSpecification": 1,
+    "name": "greenhouse-job-scraper-custom",
+    "title": "Greenhouse Job Scraper (Custom)",
+    "description": "Scrape Greenhouse job boards with department filtering support. Extract job listings, requirements, benefits, and application details. Supports filtering by department IDs.",
+    "version": "1.0.0",
+    "license": "Apache-2.0",
+    "dockerfile": "./Dockerfile",
+    "readme": "./README.md",
+    "categories": ["JOBS"],
+    "input": "./.actor/INPUT_SCHEMA.json"
+}
