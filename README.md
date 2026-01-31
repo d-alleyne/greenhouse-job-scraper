@@ -14,9 +14,9 @@ An **open source** Apify Actor that scrapes Greenhouse job boards with **departm
 - ✅ Built with Apify SDK and Crawlee
 - ✅ 100% open source
 
-## Why This Exists
+## Why Use This
 
-The official [BytePulse Labs Greenhouse Job Scraper](https://apify.com/bytepulselabs/greenhouse-job-scraper) doesn't support filtering by department, even though Greenhouse's URLs support it. This open source alternative fills that gap.
+Most Greenhouse scrapers ignore the native department filtering that Greenhouse URLs support. This actor leverages Greenhouse's department API to let you filter jobs by department ID — saving you compute costs and getting you exactly the jobs you need.
 
 ## Input
 

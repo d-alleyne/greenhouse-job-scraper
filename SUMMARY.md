@@ -2,15 +2,16 @@
 
 ## What I Built
 
-A custom Apify Actor that scrapes Greenhouse job boards **with department filtering support** — the missing feature from BytePulse Labs' official actor.
+An open source Apify Actor that scrapes Greenhouse job boards **with department filtering support** — a feature most Greenhouse scrapers lack.
 
 ## Key Features
 
 ✅ **Department Filtering** - Use `?departments[]=ID` in URLs to filter jobs  
 ✅ **Multiple Departments** - Filter by multiple department IDs  
-✅ **Same Output Format** - Drop-in replacement for BytePulse Labs actor  
+✅ **Standard Output Format** - Compatible with common Greenhouse scraper formats  
 ✅ **Fast & Efficient** - Uses Greenhouse's departments API directly  
 ✅ **Ready for Production** - Includes error handling, logging, proxy support  
+✅ **Open Source** - MIT licensed, transparent, community-driven  
 
 ## What You Get
 
@@ -52,11 +53,8 @@ See `DEPLOYMENT.md` for details.
 Update your actor reference:
 
 ```javascript
-// Old (no department filtering)
-const actor = 'bytepulselabs/greenhouse-job-scraper';
-
-// New (with department filtering)  
-const actor = 'YOUR_USERNAME/greenhouse-job-scraper-custom';
+// With department filtering support
+const actor = 'dalleyne/greenhouse-job-scraper';
 ```
 
 ### 3. Test It
@@ -89,9 +87,9 @@ Expected: 17 Engineering jobs from Webflow
 
 If you make this public on Apify Store:
 
-- **Pricing**: $2/1000 jobs (same as BytePulse Labs)
+- **Pricing**: $2/1000 jobs (standard market rate)
 - **Market**: Anyone needing department filtering
-- **Advantage**: You have the feature they don't
+- **Advantage**: Open source + department filtering = unique value prop
 - **Passive income**: Set it and forget it
 
 ## Testing Results

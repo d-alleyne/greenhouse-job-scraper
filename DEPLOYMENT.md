@@ -74,10 +74,9 @@ console.log(items); // Array of jobs
 
 ## Step 5: Update global-dev-flow
 
-In your global-dev-flow project, update the Apify Actor ID to use your custom one instead of BytePulse Labs':
+In your global-dev-flow project, update the Apify Actor ID:
 
-Replace: `bytepulselabs/greenhouse-job-scraper`  
-With: `dalleyne/greenhouse-job-scraper`
+Use: `dalleyne/greenhouse-job-scraper`
 
 ## Monetization (Optional)
 
@@ -85,7 +84,7 @@ If you want to make this a paid Actor:
 
 1. Go to your Actor settings in Apify Console
 2. Change visibility to "Public"
-3. Set up pricing (e.g., Pay-per-result like BytePulse Labs)
+3. Set up pricing (e.g., Pay-per-result at $2/1000 jobs)
 4. Submit for Apify Store listing
 
 ---

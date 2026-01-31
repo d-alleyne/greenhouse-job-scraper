@@ -74,13 +74,10 @@ Replace `COMPANY` with the board token (e.g., `webflow`, `stripe`, `github`).
 
 ## Using in global-dev-flow
 
-Once deployed to Apify, update your job scraping config to use the custom actor:
+Once deployed to Apify, update your job scraping config:
 
 ```javascript
-// Before (BytePulse Labs actor - no department filtering)
-const actor = 'bytepulselabs/greenhouse-job-scraper';
-
-// After (your open source actor - with department filtering)
+// Your open source actor with department filtering
 const actor = 'dalleyne/greenhouse-job-scraper';
 
 // Now you can use department filters in URLs
