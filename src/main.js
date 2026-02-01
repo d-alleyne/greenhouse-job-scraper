@@ -72,7 +72,7 @@ const crawler = new CheerioCrawler({
                             // Fallback to basic data if detail fetch fails
                             const locationRaw = job.location?.name || '';
                             const locationsList = locationRaw
-                                ? locationRaw.split(/[,\/]/).map(l => l.trim()).filter(Boolean)
+                                ? locationRaw.split(';').map(l => l.trim()).filter(Boolean)
                                 : [];
                             const locationLower = locationRaw.toLowerCase();
                             
@@ -101,10 +101,10 @@ const crawler = new CheerioCrawler({
                         
                         const fullJob = await jobResponse.json();
                         
-                        // Parse locations into clean array
+                        // Parse locations into clean array (Greenhouse uses semicolons as delimiter)
                         const locationRaw = job.location?.name || '';
                         const locationsList = locationRaw
-                            ? locationRaw.split(/[,\/]/).map(l => l.trim()).filter(Boolean)
+                            ? locationRaw.split(';').map(l => l.trim()).filter(Boolean)
                             : [];
                         
                         // Detect remote/hybrid from location string
