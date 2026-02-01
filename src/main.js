@@ -193,10 +193,20 @@ const crawler = new CheerioCrawler({
 });
 
 // Add URLs to the crawler with maxJobs in userData
-const requests = urls.map(({ url, maxJobs }) => ({ 
-    url,
-    userData: { maxJobs: maxJobs || null }
-}));
+// Support both formats:
+// 1. JSON tab: {"url": "...", "maxJobs": 20}
+// 2. Advanced dialog: {"url": "...", "userData": {"maxJobs": 20}}
+const requests = urls.map((item) => {
+    const { url, maxJobs, userData = {} } = item;
+    return {
+        url,
+        userData: {
+            ...userData,
+            // Top-level maxJobs takes precedence over userData.maxJobs
+            maxJobs: maxJobs !== undefined ? maxJobs : userData.maxJobs
+        }
+    };
+});
 await crawler.run(requests);
 
 await Actor.exit();

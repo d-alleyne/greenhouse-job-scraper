@@ -6,7 +6,7 @@
         "urls": {
             "title": "Job Board URLs",
             "type": "array",
-            "description": "Greenhouse job board URLs to scrape. Click 'Advanced' or switch to JSON mode to add maxJobs per URL. Example: {\"url\": \"https://job-boards.greenhouse.io/webflow\", \"maxJobs\": 20}",
+            "description": "Greenhouse job board URLs to scrape. To limit jobs per board: (1) Click 'Advanced' and add {\"maxJobs\": 20} to User data, OR (2) Switch to JSON tab and use {\"url\": \"...\", \"maxJobs\": 20}",
             "editor": "requestListSources",
             "placeholderKey": "url",
             "placeholderValue": "https://job-boards.greenhouse.io/",
