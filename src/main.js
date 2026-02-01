@@ -157,13 +157,23 @@ const crawler = new CheerioCrawler({
                         const isHybrid = locationLower.includes('hybrid');
                         
                         // Extract basic salary info with regex (USD patterns only)
-                        const salaryMatch = (fullJob.content || '').match(/\$(\d{1,3})[kK]?\s*-\s*\$(\d{1,3})[kK]?/);
-                        const salary = salaryMatch ? {
-                            min: parseInt(salaryMatch[1]) * 1000,
-                            max: parseInt(salaryMatch[2]) * 1000,
-                            currency: 'USD',
-                            raw: salaryMatch[0],
-                        } : null;
+                        // Handles: $80k-$120k, $80,000-$120,000, $80000-$120000
+                        const salaryMatch = (fullJob.content || '').match(/\$(\d{1,3}(?:,\d{3})*|\d+)[kK]?\s*[-–]\s*\$(\d{1,3}(?:,\d{3})*|\d+)[kK]?/);
+                        let salary = null;
+                        if (salaryMatch) {
+                            const parseAmount = (str) => {
+                                const cleaned = str.replace(/,/g, '');
+                                const num = parseInt(cleaned);
+                                // If it ends with 'k' or is 3 digits or less, multiply by 1000
+                                return str.match(/[kK]/) || num < 1000 ? num * 1000 : num;
+                            };
+                            salary = {
+                                min: parseAmount(salaryMatch[1]),
+                                max: parseAmount(salaryMatch[2]),
+                                currency: 'USD',
+                                raw: salaryMatch[0],
+                            };
+                        }
                         
                         // Collect all metadata for LLM processing
                         const metadata = {};
