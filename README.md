@@ -21,39 +21,43 @@ Most Greenhouse scrapers fetch all jobs and make you filter locally. This actor 
 
 ## Input
 
+### Simple Example
+
 ```json
 {
   "urls": [
-    { 
-      "url": "https://job-boards.greenhouse.io/webflow",
-      "departments": [59798, 59799],
-      "maxJobs": 20,
-      "daysBack": 7
-    },
-    {
-      "url": "https://job-boards.greenhouse.io/stripe",
-      "maxJobs": 10
-    }
+    "https://job-boards.greenhouse.io/automatticcareers",
+    "https://job-boards.greenhouse.io/gitlab"
+  ]
+}
+```
+
+### With Filters
+
+```json
+{
+  "urls": [
+    "https://job-boards.greenhouse.io/automatticcareers",
+    "https://job-boards.greenhouse.io/gitlab"
   ],
-  "proxy": {
-    "useApifyProxy": true
-  }
+  "departments": [59798, 59799],
+  "maxJobs": 20,
+  "daysBack": 7
 }
 ```
 
 ### Parameters
 
-- **urls** (required): Array of job board configurations. Each object supports:
-  - `url` (required): Clean Greenhouse job board URL (no query params needed)
-  - `departments` (optional): Array of department IDs to filter (e.g., `[59798, 59799]`)
-  - `maxJobs` (optional): Maximum number of jobs to scrape from this board
-  - `daysBack` (optional): Only fetch jobs updated in the last N days (e.g., `7` for last week)
-- **proxy** (optional): Proxy configuration. Defaults to using Apify proxy.
+- **urls** (required): Array of Greenhouse job board URLs
+- **departments** (optional): Filter jobs by department IDs (applies to all URLs)
+- **maxJobs** (optional): Maximum number of jobs to scrape per board
+- **daysBack** (optional): Only fetch jobs updated in the last N days (e.g., `7` for last week)
+- **proxy** (optional): Proxy configuration. Defaults to using Apify proxy
 
 ### How to Find Department IDs
 
-1. Visit the company's Greenhouse job board (e.g., `https://job-boards.greenhouse.io/webflow`)
-2. Click on a department filter (e.g., "Engineering")
+1. Visit the company's Greenhouse job board (e.g., `https://job-boards.greenhouse.io/automatticcareers`)
+2. Click on a department filter (e.g., "Code Wrangling" or "Account Executive")
 3. Look at the URL bar — you'll see something like: `?departments[]=59798`
 4. The number (`59798`) is the department ID
 5. Use that ID in your input: `"departments": [59798]`
@@ -65,26 +69,18 @@ The `daysBack` parameter is perfect for scheduling the scraper to run regularly 
 **Weekly scraper (runs every Monday):**
 ```json
 {
-  "urls": [
-    { 
-      "url": "https://job-boards.greenhouse.io/webflow",
-      "departments": [59798],
-      "daysBack": 7
-    }
-  ]
+  "urls": ["https://job-boards.greenhouse.io/automatticcareers"],
+  "departments": [59798],
+  "daysBack": 7
 }
 ```
 
 **Twice-weekly scraper (runs Monday & Thursday):**
 ```json
 {
-  "urls": [
-    { 
-      "url": "https://job-boards.greenhouse.io/webflow",
-      "departments": [59798],
-      "daysBack": 4
-    }
-  ]
+  "urls": ["https://job-boards.greenhouse.io/automatticcareers"],
+  "departments": [59798],
+  "daysBack": 4
 }
 ```
 
@@ -99,55 +95,36 @@ The `daysBack` parameter is perfect for scheduling the scraper to run regularly 
 **Scrape all jobs from a single company:**
 ```json
 {
-  "urls": [
-    { "url": "https://job-boards.greenhouse.io/webflow" }
-  ]
+  "urls": ["https://job-boards.greenhouse.io/automatticcareers"]
 }
 ```
 
 **Scrape specific departments only:**
 ```json
 {
-  "urls": [
-    { 
-      "url": "https://job-boards.greenhouse.io/webflow",
-      "departments": [59798, 59800]
-    }
-  ]
+  "urls": ["https://job-boards.greenhouse.io/automatticcareers"],
+  "departments": [59798, 59800]
 }
 ```
 
 **Fetch only recent jobs (last 7 days):**
 ```json
 {
-  "urls": [
-    { 
-      "url": "https://job-boards.greenhouse.io/webflow",
-      "daysBack": 7
-    }
-  ]
+  "urls": ["https://job-boards.greenhouse.io/automatticcareers"],
+  "daysBack": 7
 }
 ```
 
-**Multi-company with different filters:**
+**Multiple companies with same filters:**
 ```json
 {
   "urls": [
-    { 
-      "url": "https://job-boards.greenhouse.io/webflow",
-      "departments": [59798],
-      "maxJobs": 20
-    },
-    { 
-      "url": "https://job-boards.greenhouse.io/stripe",
-      "maxJobs": 10
-    },
-    { 
-      "url": "https://job-boards.greenhouse.io/notion",
-      "departments": [12345, 67890],
-      "maxJobs": 15
-    }
-  ]
+    "https://job-boards.greenhouse.io/automatticcareers",
+    "https://job-boards.greenhouse.io/gitlab",
+    "https://job-boards.greenhouse.io/shopify"
+  ],
+  "departments": [59798],
+  "maxJobs": 20
 }
 ```
 
@@ -158,13 +135,13 @@ Each job listing includes:
 ```json
 {
   "id": 6860572,
-  "company": "webflow",
+  "company": "automatticcareers",
   "type": "Full-time",
-  "title": "Account Executive, EMEA",
+  "title": "Account Executive, WordPress VIP",
   "description": "<p>Job description HTML...</p>",
   
-  "location": "CA Remote (BC & ON only), International Remote, U.S. Remote",
-  "locations": ["CA Remote (BC & ON only)", "International Remote", "U.S. Remote"],
+  "location": "Remote",
+  "locations": ["Remote"],
   "isRemote": true,
   "isHybrid": false,
   
@@ -175,15 +152,15 @@ Each job listing includes:
     "raw": "$80k - $120k"
   },
   
-  "department": "Sales",
+  "department": "Account Executive",
   
   "metadata": {
     "Employment Type": "Full-time",
     "Experience Level": "Mid-Senior level"
   },
   
-  "postingUrl": "https://job-boards.greenhouse.io/webflow/jobs/6860572",
-  "applyUrl": "https://job-boards.greenhouse.io/webflow/jobs/6860572",
+  "postingUrl": "https://job-boards.greenhouse.io/automatticcareers/jobs/6860572",
+  "applyUrl": "https://job-boards.greenhouse.io/automatticcareers/jobs/6860572",
   "publishedAt": "2025-05-07T01:08:03.000Z"
 }
 ```
@@ -241,12 +218,8 @@ curl -X POST https://api.apify.com/v2/acts/dalleyne~greenhouse-job-scraper/runs 
   -H "Authorization: Bearer YOUR_API_TOKEN" \
   -H "Content-Type: application/json" \
   -d '{
-    "urls": [
-      { 
-        "url": "https://job-boards.greenhouse.io/webflow",
-        "departments": [59798]
-      }
-    ]
+    "urls": ["https://job-boards.greenhouse.io/automatticcareers"],
+    "departments": [59798]
   }'
 ```
 
@@ -261,7 +234,7 @@ export APIFY_LOCAL_STORAGE_DIR=./apify_storage
 
 # Create input file
 mkdir -p ./apify_storage/key_value_stores/default
-echo '{"urls":[{"url":"https://job-boards.greenhouse.io/webflow","departments":[59798]}]}' > ./apify_storage/key_value_stores/default/INPUT.json
+echo '{"urls":["https://job-boards.greenhouse.io/automatticcareers"],"departments":[59798]}' > ./apify_storage/key_value_stores/default/INPUT.json
 
 # Run the actor
 npm start
@@ -272,7 +245,7 @@ cat ./apify_storage/datasets/default/*.json
 
 ## How It Works
 
-1. Parses Greenhouse job board URLs and extracts the board token (e.g., "webflow")
+1. Parses Greenhouse job board URLs and extracts the board token (e.g., "automatticcareers")
 2. Fetches departments via Greenhouse's public API: `https://boards-api.greenhouse.io/v1/boards/{token}/departments`
 3. Filters by department IDs if specified in the input
 4. For each job, fetches full details including description and metadata

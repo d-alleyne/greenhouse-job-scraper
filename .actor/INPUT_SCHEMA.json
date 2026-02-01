@@ -6,22 +6,41 @@
         "urls": {
             "title": "Job Board URLs",
             "type": "array",
-            "description": "Greenhouse job board URLs to scrape. To filter by department, limit jobs, or fetch recent jobs only, switch to JSON tab and add: {\"url\": \"...\", \"departments\": [59798], \"maxJobs\": 20, \"daysBack\": 7}. The daysBack parameter filters jobs updated in the last N days (useful for scheduled runs). Find department IDs by clicking a department filter on the job board and copying the number from the URL (e.g., ?departments[]=59798).",
-            "editor": "requestListSources",
-            "placeholderKey": "url",
-            "placeholderValue": "https://job-boards.greenhouse.io/",
-            "patternKey": "url",
-            "patternValue": "https://job-boards\\.greenhouse\\.io/.+",
+            "description": "One or more Greenhouse job board URLs to scrape.",
+            "editor": "stringList",
+            "example": [
+                "https://job-boards.greenhouse.io/automatticcareers",
+                "https://job-boards.greenhouse.io/gitlab"
+            ],
             "prefill": [
-                { 
-                    "url": "https://job-boards.greenhouse.io/webflow"
-                }
+                "https://job-boards.greenhouse.io/automatticcareers"
             ]
         },
+        "departments": {
+            "title": "Department IDs (optional)",
+            "type": "array",
+            "description": "Filter jobs by department. Find IDs by clicking a department filter on the job board and copying the number from the URL (e.g., ?departments[]=59798).",
+            "editor": "json",
+            "example": [59798, 12345]
+        },
+        "maxJobs": {
+            "title": "Max Jobs Per Board",
+            "type": "integer",
+            "description": "Limit the number of jobs scraped from each board (optional).",
+            "minimum": 1,
+            "example": 20
+        },
+        "daysBack": {
+            "title": "Recent Jobs Only (days)",
+            "type": "integer",
+            "description": "Only scrape jobs updated in the last N days. Useful for scheduled runs to fetch recent postings only.",
+            "minimum": 1,
+            "example": 7
+        },
         "proxy": {
-            "title": "Proxy configuration",
+            "title": "Proxy Configuration",
             "type": "object",
-            "description": "Proxy settings for the crawler",
+            "description": "Proxy settings for the crawler.",
             "editor": "proxy",
             "default": {
                 "useApifyProxy": true

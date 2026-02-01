@@ -4,7 +4,13 @@ import { CheerioCrawler } from 'crawlee';
 await Actor.init();
 
 const input = await Actor.getInput() || {};
-const { urls = [], proxy = { useApifyProxy: true } } = input;
+const { 
+    urls = [], 
+    proxy = { useApifyProxy: true },
+    departments,
+    maxJobs,
+    daysBack
+} = input;
 
 if (!urls || urls.length === 0) {
     throw new Error('No URLs provided. Please add at least one Greenhouse job board URL.');
@@ -248,16 +254,20 @@ const crawler = new CheerioCrawler({
 });
 
 // Add URLs to the crawler with departments, maxJobs, and daysBack in userData
+// Support both new schema (string URLs + top-level filters) and legacy (object URLs)
 const requests = urls.map((item) => {
-    const { url, maxJobs, departments, daysBack, userData = {} } = item;
+    // Handle both string URLs (new schema) and object URLs (legacy)
+    const urlString = typeof item === 'string' ? item : item.url;
+    const itemData = typeof item === 'object' ? item : {};
+    
     return {
-        url,
+        url: urlString,
         userData: {
-            ...userData,
-            // Top-level fields take precedence over userData
-            maxJobs: maxJobs !== undefined ? maxJobs : userData.maxJobs,
-            departments: departments !== undefined ? departments : userData.departments,
-            daysBack: daysBack !== undefined ? daysBack : userData.daysBack
+            // Input-level fields apply to all URLs (new schema)
+            // Item-level fields override input-level (legacy schema support)
+            maxJobs: itemData.maxJobs !== undefined ? itemData.maxJobs : maxJobs,
+            departments: itemData.departments !== undefined ? itemData.departments : departments,
+            daysBack: itemData.daysBack !== undefined ? itemData.daysBack : daysBack
         }
     };
 });
