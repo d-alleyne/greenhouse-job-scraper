@@ -40,11 +40,17 @@ const crawler = new CheerioCrawler({
         // Build the API URL - use departments endpoint to get jobs organized by department
         const apiUrl = `https://boards-api.greenhouse.io/v1/boards/${boardToken}/departments`;
         
-        // Parse department filters from URL if present (e.g., ?departments[]=59798)
-        const departmentIds = url.searchParams.getAll('departments[]');
-        const departmentIdNumbers = departmentIds.map(id => parseInt(id, 10));
+        // Get department filter from request userData (passed via JSON input)
+        const departments = request.userData?.departments || [];
+        const departmentIdNumbers = Array.isArray(departments) 
+            ? departments.filter(id => Number.isInteger(id) && id > 0)
+            : [];
         
-        log.info(`Fetching jobs from ${boardToken}`, { departmentIds, maxJobs });
+        if (departments.length > 0 && departmentIdNumbers.length === 0) {
+            log.warning(`Invalid departments array: ${JSON.stringify(departments)}. Must be integers > 0.`);
+        }
+        
+        log.info(`Fetching jobs from ${boardToken}`, { departments: departmentIdNumbers, maxJobs });
 
         try {
             // Fetch departments and their jobs from Greenhouse API
@@ -61,7 +67,7 @@ const crawler = new CheerioCrawler({
             // Filter departments if specified
             if (departmentIdNumbers.length > 0) {
                 departments = departments.filter(dept => departmentIdNumbers.includes(dept.id));
-                log.info(`Filtered to ${departments.length} departments matching IDs: ${departmentIds.join(', ')}`);
+                log.info(`Filtered to ${departments.length} departments matching IDs: ${departmentIdNumbers.join(', ')}`);
             }
 
             // Extract and save all jobs from the (filtered) departments
@@ -192,18 +198,16 @@ const crawler = new CheerioCrawler({
     },
 });
 
-// Add URLs to the crawler with maxJobs in userData
-// Support both formats:
-// 1. JSON tab: {"url": "...", "maxJobs": 20}
-// 2. Advanced dialog: {"url": "...", "userData": {"maxJobs": 20}}
+// Add URLs to the crawler with departments and maxJobs in userData
 const requests = urls.map((item) => {
-    const { url, maxJobs, userData = {} } = item;
+    const { url, maxJobs, departments, userData = {} } = item;
     return {
         url,
         userData: {
             ...userData,
-            // Top-level maxJobs takes precedence over userData.maxJobs
-            maxJobs: maxJobs !== undefined ? maxJobs : userData.maxJobs
+            // Top-level fields take precedence over userData
+            maxJobs: maxJobs !== undefined ? maxJobs : userData.maxJobs,
+            departments: departments !== undefined ? departments : userData.departments
         }
     };
 });

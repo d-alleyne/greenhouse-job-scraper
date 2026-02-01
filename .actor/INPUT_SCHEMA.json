@@ -6,12 +6,15 @@
         "urls": {
             "title": "Job Board URLs",
             "type": "array",
-            "description": "Greenhouse job board URLs to scrape. To limit jobs per board: (1) Click 'Advanced' and add {\"maxJobs\": 20} to User data, OR (2) Switch to JSON tab and use {\"url\": \"...\", \"maxJobs\": 20}",
-            "editor": "requestListSources",
-            "placeholderKey": "url",
-            "placeholderValue": "https://job-boards.greenhouse.io/",
-            "patternKey": "url",
-            "patternValue": "https://job-boards\\.greenhouse\\.io/.+",
+            "description": "List of job boards to scrape. Each entry supports: url (required), departments (optional array of IDs), maxJobs (optional limit per board)",
+            "editor": "json",
+            "example": [
+                {
+                    "url": "https://job-boards.greenhouse.io/webflow",
+                    "departments": [59798, 59799],
+                    "maxJobs": 20
+                }
+            ],
             "prefill": [
                 { 
                     "url": "https://job-boards.greenhouse.io/webflow"

@@ -8,15 +8,16 @@ An **open source** Apify Actor that scrapes Greenhouse job boards with **departm
 ## Features
 
 - ✅ Scrape job listings from any Greenhouse job board
-- ✅ **Filter by department** using URL parameters (e.g., `?departments[]=59798`)
+- ✅ **Filter by department** using department IDs
+- ✅ **Limit results** per job board with maxJobs parameter
 - ✅ Export data in JSON, CSV, XML, Excel, or HTML
-- ✅ Same output format as popular Greenhouse scrapers
+- ✅ Enhanced fields: salary parsing, location arrays, remote/hybrid detection
 - ✅ Built with Apify SDK and Crawlee
 - ✅ 100% open source
 
 ## Why Use This
 
-Most Greenhouse scrapers ignore the native department filtering that Greenhouse URLs support. This actor leverages Greenhouse's department API to let you filter jobs by department ID — saving you compute costs and getting you exactly the jobs you need.
+Most Greenhouse scrapers fetch all jobs and make you filter locally. This actor leverages Greenhouse's department API to filter server-side — saving you compute costs and getting you exactly the jobs you need.
 
 ## Input
 
@@ -24,7 +25,8 @@ Most Greenhouse scrapers ignore the native department filtering that Greenhouse 
 {
   "urls": [
     { 
-      "url": "https://job-boards.greenhouse.io/webflow?departments[]=59798",
+      "url": "https://job-boards.greenhouse.io/webflow",
+      "departments": [59798, 59799],
       "maxJobs": 20
     },
     {
@@ -40,35 +42,11 @@ Most Greenhouse scrapers ignore the native department filtering that Greenhouse 
 
 ### Parameters
 
-- **urls** (required): Array of Greenhouse job board URLs. Each URL object supports:
-  - `url` (required): Greenhouse job board URL (can include department filters)
-  - `maxJobs` (optional): Maximum number of jobs to scrape from this board (useful for multi-company runs)
+- **urls** (required): Array of job board configurations. Each object supports:
+  - `url` (required): Clean Greenhouse job board URL (no query params needed)
+  - `departments` (optional): Array of department IDs to filter (e.g., `[59798, 59799]`)
+  - `maxJobs` (optional): Maximum number of jobs to scrape from this board
 - **proxy** (optional): Proxy configuration. Defaults to using Apify proxy.
-
-### How to Set `maxJobs` in Apify UI
-
-**Option 1: Advanced Mode (Form View)**
-1. Add your URL in the normal field (e.g., `https://job-boards.greenhouse.io/webflow`)
-2. Click the **"Advanced"** button next to the URL
-3. In the **"User data (optional)"** field, add:
-   ```json
-   {"maxJobs": 20}
-   ```
-4. Click "Set"
-
-**Option 2: JSON Tab (Easier for Multiple URLs)**
-1. Switch to the **"JSON"** tab at the top
-2. Enter your configuration:
-   ```json
-   {
-     "urls": [
-       { "url": "https://job-boards.greenhouse.io/webflow", "maxJobs": 20 },
-       { "url": "https://job-boards.greenhouse.io/stripe", "maxJobs": 10 }
-     ]
-   }
-   ```
-
-> **Recommended:** Use the JSON tab when setting `maxJobs` for multiple companies—it's cleaner and less error-prone.
 
 ### Examples
 
@@ -85,18 +63,32 @@ Most Greenhouse scrapers ignore the native department filtering that Greenhouse 
 ```json
 {
   "urls": [
-    { "url": "https://job-boards.greenhouse.io/webflow?departments[]=59798&departments[]=59800" }
+    { 
+      "url": "https://job-boards.greenhouse.io/webflow",
+      "departments": [59798, 59800]
+    }
   ]
 }
 ```
 
-**Multi-company with different limits:**
+**Multi-company with different filters:**
 ```json
 {
   "urls": [
-    { "url": "https://job-boards.greenhouse.io/webflow", "maxJobs": 20 },
-    { "url": "https://job-boards.greenhouse.io/stripe", "maxJobs": 10 },
-    { "url": "https://job-boards.greenhouse.io/notion", "maxJobs": 15 }
+    { 
+      "url": "https://job-boards.greenhouse.io/webflow",
+      "departments": [59798],
+      "maxJobs": 20
+    },
+    { 
+      "url": "https://job-boards.greenhouse.io/stripe",
+      "maxJobs": 10
+    },
+    { 
+      "url": "https://job-boards.greenhouse.io/notion",
+      "departments": [12345, 67890],
+      "maxJobs": 15
+    }
   ]
 }
 ```
@@ -191,7 +183,10 @@ curl -X POST https://api.apify.com/v2/acts/dalleyne~greenhouse-job-scraper/runs 
   -H "Content-Type: application/json" \
   -d '{
     "urls": [
-      { "url": "https://job-boards.greenhouse.io/webflow?departments[]=59798" }
+      { 
+        "url": "https://job-boards.greenhouse.io/webflow",
+        "departments": [59798]
+      }
     ]
   }'
 ```
@@ -207,7 +202,7 @@ export APIFY_LOCAL_STORAGE_DIR=./apify_storage
 
 # Create input file
 mkdir -p ./apify_storage/key_value_stores/default
-echo '{"urls":[{"url":"https://job-boards.greenhouse.io/webflow?departments[]=59798"}]}' > ./apify_storage/key_value_stores/default/INPUT.json
+echo '{"urls":[{"url":"https://job-boards.greenhouse.io/webflow","departments":[59798]}]}' > ./apify_storage/key_value_stores/default/INPUT.json
 
 # Run the actor
 npm start
@@ -218,11 +213,12 @@ cat ./apify_storage/datasets/default/*.json
 
 ## How It Works
 
-1. Parses Greenhouse job board URLs
-2. Extracts the board token (e.g., "webflow")
-3. Fetches jobs via Greenhouse's public API: `https://boards-api.greenhouse.io/v1/boards/{token}/jobs`
-4. Filters by department IDs if present in the URL
-5. Transforms and saves results to the dataset
+1. Parses Greenhouse job board URLs and extracts the board token (e.g., "webflow")
+2. Fetches departments via Greenhouse's public API: `https://boards-api.greenhouse.io/v1/boards/{token}/departments`
+3. Filters by department IDs if specified in the input
+4. For each job, fetches full details including description and metadata
+5. Parses enhanced fields (salary, location array, remote/hybrid flags)
+6. Saves results to the dataset
 
 ## License
 
