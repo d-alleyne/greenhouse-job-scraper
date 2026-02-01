@@ -28,8 +28,12 @@ const crawler = new CheerioCrawler({
             return;
         }
 
-        // Extract maxJobs limit if provided
-        const maxJobs = request.userData?.maxJobs || null;
+        // Extract maxJobs limit if provided (validate it's a positive integer)
+        let maxJobs = request.userData?.maxJobs || null;
+        if (maxJobs !== null && (typeof maxJobs !== 'number' || maxJobs < 1 || !Number.isInteger(maxJobs))) {
+            log.warning(`Invalid maxJobs value: ${maxJobs}. Ignoring limit.`);
+            maxJobs = null;
+        }
 
         // Build the API URL - use departments endpoint to get jobs organized by department
         const apiUrl = `https://boards-api.greenhouse.io/v1/boards/${boardToken}/departments`;

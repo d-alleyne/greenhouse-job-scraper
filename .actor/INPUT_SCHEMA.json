@@ -4,17 +4,40 @@
     "schemaVersion": 1,
     "properties": {
         "urls": {
-            "title": "URLs",
+            "title": "Job Boards to Scrape",
             "type": "array",
-            "description": "One or more Greenhouse job board URLs to scrape. You can include department filters in the URL (e.g., https://job-boards.greenhouse.io/webflow?departments[]=59798). Optionally specify maxJobs per URL to limit results per company.",
-            "editor": "requestListSources",
-            "placeholderKey": "url",
-            "placeholderValue": "https://job-boards.greenhouse.io/",
-            "patternKey": "url",
-            "patternValue": "https://job-boards\\.greenhouse\\.io/.+",
+            "description": "One or more Greenhouse job board URLs to scrape. You can include department filters in the URL (e.g., https://job-boards.greenhouse.io/webflow?departments[]=59798).",
+            "editor": "json",
             "prefill": [
-                { "url": "https://job-boards.greenhouse.io/webflow" }
-            ]
+                { 
+                    "url": "https://job-boards.greenhouse.io/webflow",
+                    "maxJobs": null
+                }
+            ],
+            "items": {
+                "type": "object",
+                "title": "Job Board",
+                "properties": {
+                    "url": {
+                        "type": "string",
+                        "title": "URL",
+                        "description": "Greenhouse job board URL",
+                        "editor": "textfield",
+                        "pattern": "^https://job-boards\\.greenhouse\\.io/.+",
+                        "example": "https://job-boards.greenhouse.io/webflow"
+                    },
+                    "maxJobs": {
+                        "type": "integer",
+                        "title": "Max Jobs",
+                        "description": "Maximum number of jobs to scrape from this board (leave empty for unlimited)",
+                        "editor": "number",
+                        "minimum": 1,
+                        "nullable": true,
+                        "example": 20
+                    }
+                },
+                "required": ["url"]
+            }
         },
         "proxy": {
             "title": "Proxy configuration",
