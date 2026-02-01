@@ -6,7 +6,7 @@
         "urls": {
             "title": "Job Board URLs",
             "type": "array",
-            "description": "Greenhouse job board URLs to scrape. To filter by department or limit jobs, switch to JSON tab and add: {\"url\": \"...\", \"departments\": [59798], \"maxJobs\": 20}. Find department IDs by clicking a department filter on the job board and copying the number from the URL (e.g., ?departments[]=59798).",
+            "description": "Greenhouse job board URLs to scrape. To filter by department, limit jobs, or fetch recent jobs only, switch to JSON tab and add: {\"url\": \"...\", \"departments\": [59798], \"maxJobs\": 20, \"daysBack\": 7}. The daysBack parameter filters jobs updated in the last N days (useful for scheduled runs). Find department IDs by clicking a department filter on the job board and copying the number from the URL (e.g., ?departments[]=59798).",
             "editor": "requestListSources",
             "placeholderKey": "url",
             "placeholderValue": "https://job-boards.greenhouse.io/",

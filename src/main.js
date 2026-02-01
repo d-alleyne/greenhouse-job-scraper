@@ -37,6 +37,19 @@ const crawler = new CheerioCrawler({
             maxJobs = null;
         }
 
+        // Extract daysBack filter if provided (only fetch jobs updated in last N days)
+        let daysBack = request.userData?.daysBack;
+        let cutoffDate = null;
+        if (daysBack !== null && daysBack !== undefined) {
+            if (typeof daysBack === 'number' && daysBack > 0 && Number.isInteger(daysBack)) {
+                cutoffDate = new Date();
+                cutoffDate.setDate(cutoffDate.getDate() - daysBack);
+                log.info(`Filtering jobs updated after ${cutoffDate.toISOString()}`);
+            } else {
+                log.warning(`Invalid daysBack value: ${daysBack}. Ignoring date filter.`);
+            }
+        }
+
         // Build the API URL - use departments endpoint to get jobs organized by department
         const apiUrl = `https://boards-api.greenhouse.io/v1/boards/${boardToken}/departments`;
         
@@ -72,10 +85,20 @@ const crawler = new CheerioCrawler({
 
             // Extract and save all jobs from the (filtered) departments
             let totalJobs = 0;
+            let filteredByDate = 0;
             departmentLoop: for (const department of departments) {
                 const jobs = department.jobs || [];
                 
                 for (const job of jobs) {
+                    // Filter by date if cutoffDate is set
+                    if (cutoffDate) {
+                        const jobDate = new Date(job.updated_at);
+                        if (jobDate < cutoffDate) {
+                            filteredByDate++;
+                            continue; // Skip this job
+                        }
+                    }
+
                     // Stop if we've reached the maxJobs limit
                     if (maxJobs && totalJobs >= maxJobs) {
                         log.info(`Reached maxJobs limit of ${maxJobs}, stopping`);
@@ -191,6 +214,9 @@ const crawler = new CheerioCrawler({
             }
 
             log.info(`Saved ${totalJobs} jobs to dataset`);
+            if (filteredByDate > 0) {
+                log.info(`Filtered out ${filteredByDate} jobs older than cutoff date`);
+            }
         } catch (error) {
             log.error(`Failed to fetch jobs for ${boardToken}: ${error.message}`);
             throw error;
@@ -198,16 +224,17 @@ const crawler = new CheerioCrawler({
     },
 });
 
-// Add URLs to the crawler with departments and maxJobs in userData
+// Add URLs to the crawler with departments, maxJobs, and daysBack in userData
 const requests = urls.map((item) => {
-    const { url, maxJobs, departments, userData = {} } = item;
+    const { url, maxJobs, departments, daysBack, userData = {} } = item;
     return {
         url,
         userData: {
             ...userData,
             // Top-level fields take precedence over userData
             maxJobs: maxJobs !== undefined ? maxJobs : userData.maxJobs,
-            departments: departments !== undefined ? departments : userData.departments
+            departments: departments !== undefined ? departments : userData.departments,
+            daysBack: daysBack !== undefined ? daysBack : userData.daysBack
         }
     };
 });

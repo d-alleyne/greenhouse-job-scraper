@@ -46,6 +46,7 @@ Most Greenhouse scrapers fetch all jobs and make you filter locally. This actor 
   - `url` (required): Clean Greenhouse job board URL (no query params needed)
   - `departments` (optional): Array of department IDs to filter (e.g., `[59798, 59799]`)
   - `maxJobs` (optional): Maximum number of jobs to scrape from this board
+  - `daysBack` (optional): Only fetch jobs updated in the last N days (e.g., `7` for last week)
 - **proxy** (optional): Proxy configuration. Defaults to using Apify proxy.
 
 ### How to Find Department IDs
@@ -55,6 +56,42 @@ Most Greenhouse scrapers fetch all jobs and make you filter locally. This actor 
 3. Look at the URL bar — you'll see something like: `?departments[]=59798`
 4. The number (`59798`) is the department ID
 5. Use that ID in your input: `"departments": [59798]`
+
+### Scheduled Runs
+
+The `daysBack` parameter is perfect for scheduling the scraper to run regularly and only fetch new jobs:
+
+**Weekly scraper (runs every Monday):**
+```json
+{
+  "urls": [
+    { 
+      "url": "https://job-boards.greenhouse.io/webflow",
+      "departments": [59798],
+      "daysBack": 7
+    }
+  ]
+}
+```
+
+**Twice-weekly scraper (runs Monday & Thursday):**
+```json
+{
+  "urls": [
+    { 
+      "url": "https://job-boards.greenhouse.io/webflow",
+      "departments": [59798],
+      "daysBack": 4
+    }
+  ]
+}
+```
+
+**How it works:**
+- The scraper fetches all jobs from the board
+- Jobs are filtered by their `updated_at` timestamp
+- Only jobs updated in the last N days are returned
+- **Cost savings**: You only pay for jobs that match the date filter (not all jobs)
 
 ### Examples
 
@@ -74,6 +111,18 @@ Most Greenhouse scrapers fetch all jobs and make you filter locally. This actor 
     { 
       "url": "https://job-boards.greenhouse.io/webflow",
       "departments": [59798, 59800]
+    }
+  ]
+}
+```
+
+**Fetch only recent jobs (last 7 days):**
+```json
+{
+  "urls": [
+    { 
+      "url": "https://job-boards.greenhouse.io/webflow",
+      "daysBack": 7
     }
   ]
 }
