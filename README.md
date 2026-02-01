@@ -198,8 +198,9 @@ Each job listing includes:
 - `locations` (array) - Parsed location list (split on commas/slashes)
 - `isRemote` (boolean) - Location contains "remote"
 - `isHybrid` (boolean) - Location contains "hybrid"
-- `salary` (object|null) - Regex extraction for USD salary ranges
-  - Handles: `$110,000 - $120,000`, `$80k - $120k`, `$150000 - $200000`
+- `salary` (object|null) - Regex extraction for salary ranges with currency detection
+  - Handles: `$110,000 - $120,000`, `£50k - £70k`, `€60,000 - €80,000`
+  - Detects currency from symbol (£=GBP, €=EUR) and context for $ (USD/CAD/AUD/EUR by region)
   - Only catches range patterns; narrative descriptions should be parsed with LLM locally
 - `metadata` (object) - All Greenhouse metadata fields (Employment Type, Experience Level, etc.)
 

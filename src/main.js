@@ -156,9 +156,9 @@ const crawler = new CheerioCrawler({
                         const isRemote = locationLower.includes('remote');
                         const isHybrid = locationLower.includes('hybrid');
                         
-                        // Extract basic salary info with regex (USD patterns only)
-                        // Handles: $80k-$120k, $80,000-$120,000, $80000-$120000
-                        const salaryMatch = (fullJob.content || '').match(/\$(\d{1,3}(?:,\d{3})*|\d+)[kK]?\s*[-–]\s*\$(\d{1,3}(?:,\d{3})*|\d+)[kK]?/);
+                        // Extract basic salary info with regex
+                        // Handles: $80k-$120k, $80,000-$120,000, $80000-$120000, £50k-£70k, €60k-€80k
+                        const salaryMatch = (fullJob.content || '').match(/([£€\$])(\d{1,3}(?:,\d{3})*|\d+)[kK]?\s*[-–]\s*\1(\d{1,3}(?:,\d{3})*|\d+)[kK]?/);
                         let salary = null;
                         if (salaryMatch) {
                             const parseAmount = (str) => {
@@ -167,10 +167,24 @@ const crawler = new CheerioCrawler({
                                 // If it ends with 'k' or is 3 digits or less, multiply by 1000
                                 return str.match(/[kK]/) || num < 1000 ? num * 1000 : num;
                             };
+                            
+                            // Detect currency from symbol, then check context for $ (could be USD, CAD, AUD, etc.)
+                            let currency = salaryMatch[1] === '£' ? 'GBP' : salaryMatch[1] === '€' ? 'EUR' : 'USD';
+                            if (salaryMatch[1] === '$') {
+                                // Try to detect specific currency from nearby context (within 200 chars)
+                                const matchIndex = fullJob.content.indexOf(salaryMatch[0]);
+                                const context = fullJob.content.slice(Math.max(0, matchIndex - 200), matchIndex + 200);
+                                if (/\bCAD\b|Canada/i.test(context)) currency = 'CAD';
+                                else if (/\bAUD\b|Australia/i.test(context)) currency = 'AUD';
+                                else if (/\bEUR\b|Europe|Ireland/i.test(context)) currency = 'EUR';
+                                else if (/\bGBP\b|UK|United Kingdom/i.test(context)) currency = 'GBP';
+                                // Otherwise defaults to USD
+                            }
+                            
                             salary = {
-                                min: parseAmount(salaryMatch[1]),
-                                max: parseAmount(salaryMatch[2]),
-                                currency: 'USD',
+                                min: parseAmount(salaryMatch[2]),
+                                max: parseAmount(salaryMatch[3]),
+                                currency,
                                 raw: salaryMatch[0],
                             };
                         }

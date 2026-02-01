@@ -1,0 +1,9 @@
+{
+	"id": "hPxVr3NE0xBtU6E",
+	"json": "{\"id\":\"hPxVr3NE0xBtU6E\",\"url\":\"https://job-boards.greenhouse.io/circleso\",\"loadedUrl\":\"https://job-boards.greenhouse.io/circleso\",\"uniqueKey\":\"https://job-boards.greenhouse.io/circleso\",\"method\":\"GET\",\"noRetry\":false,\"retryCount\":0,\"errorMessages\":[],\"headers\":{},\"userData\":{\"maxJobs\":3,\"departments\":[4024767008,4024784008],\"__crawlee\":{\"state\":4}},\"handledAt\":\"2026-02-01T14:21:15.479Z\"}",
+	"method": "GET",
+	"orderNo": null,
+	"retryCount": 0,
+	"uniqueKey": "https://job-boards.greenhouse.io/circleso",
+	"url": "https://job-boards.greenhouse.io/circleso"
+}
