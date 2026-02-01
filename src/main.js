@@ -28,9 +28,11 @@ const crawler = new CheerioCrawler({
             return;
         }
 
-        // Extract maxJobs limit if provided (validate it's a positive integer)
-        let maxJobs = request.userData?.maxJobs || null;
-        if (maxJobs !== null && (typeof maxJobs !== 'number' || maxJobs < 1 || !Number.isInteger(maxJobs))) {
+        // Extract maxJobs limit if provided (validate it's a non-negative integer, 0 means unlimited)
+        let maxJobs = request.userData?.maxJobs;
+        if (maxJobs === 0 || maxJobs === null || maxJobs === undefined) {
+            maxJobs = null; // Treat 0, null, undefined as unlimited
+        } else if (typeof maxJobs !== 'number' || maxJobs < 0 || !Number.isInteger(maxJobs)) {
             log.warning(`Invalid maxJobs value: ${maxJobs}. Ignoring limit.`);
             maxJobs = null;
         }
