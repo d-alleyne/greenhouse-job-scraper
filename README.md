@@ -26,32 +26,40 @@ Most Greenhouse scrapers fetch all jobs and make you filter locally. This actor 
 ```json
 {
   "urls": [
-    "https://job-boards.greenhouse.io/automatticcareers",
-    "https://job-boards.greenhouse.io/gitlab"
+    { "url": "https://job-boards.greenhouse.io/automatticcareers" },
+    { "url": "https://job-boards.greenhouse.io/gitlab" }
   ]
 }
 ```
 
-### With Filters
+### With Filters (Per-Board)
+
+Each URL can have its own filters:
 
 ```json
 {
   "urls": [
-    "https://job-boards.greenhouse.io/automatticcareers",
-    "https://job-boards.greenhouse.io/gitlab"
-  ],
-  "departments": [59798, 59799],
-  "maxJobs": 20,
-  "daysBack": 7
+    { 
+      "url": "https://job-boards.greenhouse.io/automatticcareers",
+      "departments": [307170],
+      "maxJobs": 20,
+      "daysBack": 7
+    },
+    { 
+      "url": "https://job-boards.greenhouse.io/gitlab",
+      "maxJobs": 10
+    }
+  ]
 }
 ```
 
 ### Parameters
 
-- **urls** (required): Array of Greenhouse job board URLs
-- **departments** (optional): Filter jobs by department IDs (applies to all URLs)
-- **maxJobs** (optional): Maximum number of jobs to scrape per board
-- **daysBack** (optional): Only fetch jobs updated in the last N days (e.g., `7` for last week)
+- **urls** (required): Array of job board configurations. Each object supports:
+  - `url` (required): Clean Greenhouse job board URL (no query params needed)
+  - `departments` (optional): Array of department IDs to filter (e.g., `[307170, 307172]`)
+  - `maxJobs` (optional): Maximum number of jobs to scrape from this board
+  - `daysBack` (optional): Only fetch jobs updated in the last N days (e.g., `7` for last week)
 - **proxy** (optional): Proxy configuration. Defaults to using Apify proxy
 
 ### How to Find Department IDs
@@ -69,18 +77,26 @@ The `daysBack` parameter is perfect for scheduling the scraper to run regularly 
 **Weekly scraper (runs every Monday):**
 ```json
 {
-  "urls": ["https://job-boards.greenhouse.io/automatticcareers"],
-  "departments": [59798],
-  "daysBack": 7
+  "urls": [
+    { 
+      "url": "https://job-boards.greenhouse.io/automatticcareers",
+      "departments": [307170],
+      "daysBack": 7
+    }
+  ]
 }
 ```
 
 **Twice-weekly scraper (runs Monday & Thursday):**
 ```json
 {
-  "urls": ["https://job-boards.greenhouse.io/automatticcareers"],
-  "departments": [59798],
-  "daysBack": 4
+  "urls": [
+    { 
+      "url": "https://job-boards.greenhouse.io/automatticcareers",
+      "departments": [307170],
+      "daysBack": 4
+    }
+  ]
 }
 ```
 
@@ -95,36 +111,55 @@ The `daysBack` parameter is perfect for scheduling the scraper to run regularly 
 **Scrape all jobs from a single company:**
 ```json
 {
-  "urls": ["https://job-boards.greenhouse.io/automatticcareers"]
+  "urls": [
+    { "url": "https://job-boards.greenhouse.io/automatticcareers" }
+  ]
 }
 ```
 
 **Scrape specific departments only:**
 ```json
 {
-  "urls": ["https://job-boards.greenhouse.io/automatticcareers"],
-  "departments": [59798, 59800]
+  "urls": [
+    { 
+      "url": "https://job-boards.greenhouse.io/automatticcareers",
+      "departments": [307170, 307172]
+    }
+  ]
 }
 ```
 
 **Fetch only recent jobs (last 7 days):**
 ```json
 {
-  "urls": ["https://job-boards.greenhouse.io/automatticcareers"],
-  "daysBack": 7
+  "urls": [
+    { 
+      "url": "https://job-boards.greenhouse.io/automatticcareers",
+      "daysBack": 7
+    }
+  ]
 }
 ```
 
-**Multiple companies with same filters:**
+**Multiple companies with different filters:**
 ```json
 {
   "urls": [
-    "https://job-boards.greenhouse.io/automatticcareers",
-    "https://job-boards.greenhouse.io/gitlab",
-    "https://job-boards.greenhouse.io/shopify"
-  ],
-  "departments": [59798],
-  "maxJobs": 20
+    { 
+      "url": "https://job-boards.greenhouse.io/automatticcareers",
+      "departments": [307170],
+      "maxJobs": 20
+    },
+    { 
+      "url": "https://job-boards.greenhouse.io/gitlab",
+      "maxJobs": 10
+    },
+    { 
+      "url": "https://job-boards.greenhouse.io/shopify",
+      "departments": [123, 456],
+      "maxJobs": 15
+    }
+  ]
 }
 ```
 
@@ -218,8 +253,12 @@ curl -X POST https://api.apify.com/v2/acts/dalleyne~greenhouse-job-scraper/runs 
   -H "Authorization: Bearer YOUR_API_TOKEN" \
   -H "Content-Type: application/json" \
   -d '{
-    "urls": ["https://job-boards.greenhouse.io/automatticcareers"],
-    "departments": [59798]
+    "urls": [
+      { 
+        "url": "https://job-boards.greenhouse.io/automatticcareers",
+        "departments": [307170]
+      }
+    ]
   }'
 ```
 
@@ -234,7 +273,7 @@ export APIFY_LOCAL_STORAGE_DIR=./apify_storage
 
 # Create input file
 mkdir -p ./apify_storage/key_value_stores/default
-echo '{"urls":["https://job-boards.greenhouse.io/automatticcareers"],"departments":[59798]}' > ./apify_storage/key_value_stores/default/INPUT.json
+echo '{"urls":[{"url":"https://job-boards.greenhouse.io/automatticcareers","departments":[307170]}]}' > ./apify_storage/key_value_stores/default/INPUT.json
 
 # Run the actor
 npm start

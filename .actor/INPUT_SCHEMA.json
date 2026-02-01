@@ -6,36 +6,17 @@
         "urls": {
             "title": "Job Board URLs",
             "type": "array",
-            "description": "One or more Greenhouse job board URLs to scrape.",
-            "editor": "stringList",
-            "example": [
-                "https://job-boards.greenhouse.io/automatticcareers",
-                "https://job-boards.greenhouse.io/gitlab"
-            ],
+            "description": "Greenhouse job board URLs to scrape. Add simple URLs or configure per-board filters (departments, maxJobs, daysBack) in the JSON tab.",
+            "editor": "requestListSources",
+            "placeholderKey": "url",
+            "placeholderValue": "https://job-boards.greenhouse.io/automatticcareers",
+            "patternKey": "url",
+            "patternValue": "https://job-boards\\.greenhouse\\.io/.+",
             "prefill": [
-                "https://job-boards.greenhouse.io/automatticcareers"
+                { 
+                    "url": "https://job-boards.greenhouse.io/automatticcareers"
+                }
             ]
-        },
-        "departments": {
-            "title": "Department IDs (optional)",
-            "type": "array",
-            "description": "Filter jobs by department. Find IDs by clicking a department filter on the job board and copying the number from the URL (e.g., ?departments[]=59798).",
-            "editor": "json",
-            "example": [59798, 12345]
-        },
-        "maxJobs": {
-            "title": "Max Jobs Per Board",
-            "type": "integer",
-            "description": "Limit the number of jobs scraped from each board (optional).",
-            "minimum": 1,
-            "example": 20
-        },
-        "daysBack": {
-            "title": "Recent Jobs Only (days)",
-            "type": "integer",
-            "description": "Only scrape jobs updated in the last N days. Useful for scheduled runs to fetch recent postings only.",
-            "minimum": 1,
-            "example": 7
         },
         "proxy": {
             "title": "Proxy Configuration",
