@@ -48,6 +48,14 @@ Most Greenhouse scrapers fetch all jobs and make you filter locally. This actor 
   - `maxJobs` (optional): Maximum number of jobs to scrape from this board
 - **proxy** (optional): Proxy configuration. Defaults to using Apify proxy.
 
+### How to Find Department IDs
+
+1. Visit the company's Greenhouse job board (e.g., `https://job-boards.greenhouse.io/webflow`)
+2. Click on a department filter (e.g., "Engineering")
+3. Look at the URL bar — you'll see something like: `?departments[]=59798`
+4. The number (`59798`) is the department ID
+5. Use that ID in your input: `"departments": [59798]`
+
 ### Examples
 
 **Scrape all jobs from a single company:**
