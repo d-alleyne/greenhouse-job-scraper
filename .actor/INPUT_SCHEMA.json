@@ -6,14 +6,14 @@
         "urls": {
             "title": "Job Board URLs",
             "type": "array",
-            "description": "Greenhouse job board URLs to scrape. Add simple URLs or configure per-board filters (departments, maxJobs, daysBack) in the JSON tab.",
+            "description": "Greenhouse job board URLs to scrape. Use simple URLs or add per-board filters in JSON mode. See README for examples.",
             "editor": "requestListSources",
             "placeholderKey": "url",
             "placeholderValue": "https://job-boards.greenhouse.io/automatticcareers",
             "patternKey": "url",
             "patternValue": "https://job-boards\\.greenhouse\\.io/.+",
             "prefill": [
-                { 
+                {
                     "url": "https://job-boards.greenhouse.io/automatticcareers"
                 }
             ]
