@@ -70,14 +70,26 @@ const crawler = new CheerioCrawler({
                         if (!jobResponse.ok) {
                             log.warning(`Failed to fetch details for job ${job.id}, using basic data`);
                             // Fallback to basic data if detail fetch fails
+                            const locationRaw = job.location?.name || '';
+                            const locationsList = locationRaw
+                                ? locationRaw.split(/[,\/]/).map(l => l.trim()).filter(Boolean)
+                                : [];
+                            const locationLower = locationRaw.toLowerCase();
+                            
                             const jobData = {
                                 id: job.id,
+                                company: boardToken,
                                 type: null,
                                 title: job.title,
                                 description: '',
-                                locations: job.location?.name ? [job.location.name] : [],
+                                location: locationRaw,
+                                locations: locationsList,
+                                isRemote: locationLower.includes('remote'),
+                                isHybrid: locationLower.includes('hybrid'),
+                                salary: null,
                                 department: department.name,
                                 departments: [department.name],
+                                metadata: {},
                                 postingUrl: job.absolute_url,
                                 applyUrl: job.absolute_url,
                                 publishedAt: job.updated_at,
@@ -89,14 +101,60 @@ const crawler = new CheerioCrawler({
                         
                         const fullJob = await jobResponse.json();
                         
+                        // Parse locations into clean array
+                        const locationRaw = job.location?.name || '';
+                        const locationsList = locationRaw
+                            ? locationRaw.split(/[,\/]/).map(l => l.trim()).filter(Boolean)
+                            : [];
+                        
+                        // Detect remote/hybrid from location string
+                        const locationLower = locationRaw.toLowerCase();
+                        const isRemote = locationLower.includes('remote');
+                        const isHybrid = locationLower.includes('hybrid');
+                        
+                        // Extract basic salary info with regex (USD patterns only)
+                        const salaryMatch = (fullJob.content || '').match(/\$(\d{1,3})[kK]?\s*-\s*\$(\d{1,3})[kK]?/);
+                        const salary = salaryMatch ? {
+                            min: parseInt(salaryMatch[1]) * 1000,
+                            max: parseInt(salaryMatch[2]) * 1000,
+                            currency: 'USD',
+                            raw: salaryMatch[0],
+                        } : null;
+                        
+                        // Collect all metadata for LLM processing
+                        const metadata = {};
+                        if (fullJob.metadata && Array.isArray(fullJob.metadata)) {
+                            fullJob.metadata.forEach(m => {
+                                if (m.name && m.value_text) {
+                                    metadata[m.name] = m.value_text;
+                                }
+                            });
+                        }
+                        
                         const jobData = {
                             id: job.id,
-                            type: fullJob.metadata?.find(m => m.name === 'Employment Type')?.value_text || null,
+                            company: boardToken, // Board token is typically the company identifier
+                            type: metadata['Employment Type'] || null,
                             title: job.title,
                             description: fullJob.content || '',
-                            locations: job.location?.name ? [job.location.name] : [],
+                            
+                            // Location fields
+                            location: locationRaw, // Raw location string for LLM parsing
+                            locations: locationsList, // Parsed array
+                            isRemote,
+                            isHybrid,
+                            
+                            // Salary (basic regex, LLM can enhance locally)
+                            salary,
+                            
+                            // Department
                             department: department.name,
                             departments: [department.name],
+                            
+                            // All metadata for flexible LLM processing
+                            metadata,
+                            
+                            // URLs and dates
                             postingUrl: job.absolute_url,
                             applyUrl: job.absolute_url,
                             publishedAt: job.updated_at,

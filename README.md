@@ -43,17 +43,55 @@ Each job listing includes:
 ```json
 {
   "id": 6860572,
+  "company": "webflow",
   "type": "Full-time",
   "title": "Account Executive, EMEA",
   "description": "<p>Job description HTML...</p>",
-  "locations": ["CA Remote (BC & ON only)", "International Remote"],
-  "departments": ["Sales"],
+  
+  "location": "CA Remote (BC & ON only), International Remote, U.S. Remote",
+  "locations": ["CA Remote (BC & ON only)", "International Remote", "U.S. Remote"],
+  "isRemote": true,
+  "isHybrid": false,
+  
+  "salary": {
+    "min": 80000,
+    "max": 120000,
+    "currency": "USD",
+    "raw": "$80k - $120k"
+  },
+  
   "department": "Sales",
+  "departments": ["Sales"],
+  
+  "metadata": {
+    "Employment Type": "Full-time",
+    "Experience Level": "Mid-Senior level"
+  },
+  
   "postingUrl": "https://job-boards.greenhouse.io/webflow/jobs/6860572",
   "applyUrl": "https://job-boards.greenhouse.io/webflow/jobs/6860572",
   "publishedAt": "2025-05-07T01:08:03.000Z"
 }
 ```
+
+### Field Descriptions
+
+**Basic fields** (always extracted):
+- `id`, `title`, `company`, `department`, `postingUrl`, `applyUrl`, `publishedAt`
+
+**Enhanced fields** (parsed from data):
+- `location` (string) - Raw location text from Greenhouse
+- `locations` (array) - Parsed location list (split on commas/slashes)
+- `isRemote` (boolean) - Location contains "remote"
+- `isHybrid` (boolean) - Location contains "hybrid"
+- `salary` (object|null) - Basic regex extraction for USD patterns like "$80k - $120k"
+  - Only catches simple formats; complex salary descriptions should be parsed with LLM locally
+- `metadata` (object) - All Greenhouse metadata fields (Employment Type, Experience Level, etc.)
+
+**For LLM enhancement** (recommended local post-processing):
+- `description` - Full HTML description for extracting tech stack, detailed requirements, timezone restrictions
+- `location` - Raw string for geographic classification (US-only, EMEA, APAC, etc.)
+- `salary` - May be null if salary isn't in simple format; parse `description` for complex patterns
 
 ## Usage
 
