@@ -193,7 +193,6 @@ const crawler = new CheerioCrawler({
                             
                             // Department
                             department: department.name,
-                            departments: [department.name],
                             
                             // All metadata for flexible LLM processing
                             metadata,

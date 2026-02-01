@@ -176,7 +176,6 @@ Each job listing includes:
   },
   
   "department": "Sales",
-  "departments": ["Sales"],
   
   "metadata": {
     "Employment Type": "Full-time",
