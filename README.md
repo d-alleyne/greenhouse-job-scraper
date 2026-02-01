@@ -43,7 +43,10 @@ Most Greenhouse scrapers ignore the native department filtering that Greenhouse 
 - **urls** (required): Array of Greenhouse job board URLs. Each URL object supports:
   - `url` (required): Greenhouse job board URL (can include department filters)
   - `maxJobs` (optional): Maximum number of jobs to scrape from this board (useful for multi-company runs)
+    - To add `maxJobs` in Apify UI: Click "Advanced" next to each URL or switch to "JSON" tab
 - **proxy** (optional): Proxy configuration. Defaults to using Apify proxy.
+
+> **Tip:** In the Apify UI Form view, click the "Advanced" button next to each URL to add the `maxJobs` field, or switch to the "JSON" tab for full control.
 
 ### Examples
 
