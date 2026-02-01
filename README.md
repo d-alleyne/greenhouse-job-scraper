@@ -27,7 +27,8 @@ Most Greenhouse scrapers fetch all jobs and make you filter locally. This actor 
     { 
       "url": "https://job-boards.greenhouse.io/webflow",
       "departments": [59798, 59799],
-      "maxJobs": 20
+      "maxJobs": 20,
+      "daysBack": 7
     },
     {
       "url": "https://job-boards.greenhouse.io/stripe",
