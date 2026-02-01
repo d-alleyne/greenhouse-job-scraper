@@ -1,0 +1,13 @@
+{
+  "actorOutputSchemaVersion": 1,
+  "title": "Greenhouse Job Scraper Output",
+  "description": "Scraped job listings from Greenhouse job boards with enhanced data extraction",
+  "properties": {
+    "jobs": {
+      "type": "string",
+      "title": "Job Listings",
+      "description": "All scraped job postings with departments, salaries, locations, and metadata",
+      "template": "{{links.apiDefaultDatasetUrl}}/items"
+    }
+  }
+}

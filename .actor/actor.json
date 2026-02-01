@@ -8,5 +8,6 @@
     "dockerfile": "./Dockerfile",
     "readme": "./README.md",
     "categories": ["JOBS"],
-    "input": "./INPUT_SCHEMA.json"
+    "input": "./INPUT_SCHEMA.json",
+    "output": "./output_schema.json"
 }
