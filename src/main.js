@@ -28,6 +28,9 @@ const crawler = new CheerioCrawler({
             return;
         }
 
+        // Extract maxJobs limit if provided
+        const maxJobs = request.userData?.maxJobs || null;
+
         // Build the API URL - use departments endpoint to get jobs organized by department
         const apiUrl = `https://boards-api.greenhouse.io/v1/boards/${boardToken}/departments`;
         
@@ -35,7 +38,7 @@ const crawler = new CheerioCrawler({
         const departmentIds = url.searchParams.getAll('departments[]');
         const departmentIdNumbers = departmentIds.map(id => parseInt(id, 10));
         
-        log.info(`Fetching jobs from ${boardToken}`, { departmentIds });
+        log.info(`Fetching jobs from ${boardToken}`, { departmentIds, maxJobs });
 
         try {
             // Fetch departments and their jobs from Greenhouse API
@@ -57,10 +60,16 @@ const crawler = new CheerioCrawler({
 
             // Extract and save all jobs from the (filtered) departments
             let totalJobs = 0;
-            for (const department of departments) {
+            departmentLoop: for (const department of departments) {
                 const jobs = department.jobs || [];
                 
                 for (const job of jobs) {
+                    // Stop if we've reached the maxJobs limit
+                    if (maxJobs && totalJobs >= maxJobs) {
+                        log.info(`Reached maxJobs limit of ${maxJobs}, stopping`);
+                        break departmentLoop;
+                    }
+                    
                     // Fetch full job details to get description and metadata
                     const jobDetailUrl = `https://boards-api.greenhouse.io/v1/boards/${boardToken}/jobs/${job.id}`;
                     log.debug(`Fetching full details for job ${job.id}: ${job.title}`);
@@ -177,8 +186,11 @@ const crawler = new CheerioCrawler({
     },
 });
 
-// Add URLs to the crawler
-const requests = urls.map(({ url }) => ({ url }));
+// Add URLs to the crawler with maxJobs in userData
+const requests = urls.map(({ url, maxJobs }) => ({ 
+    url,
+    userData: { maxJobs: maxJobs || null }
+}));
 await crawler.run(requests);
 
 await Actor.exit();

@@ -23,7 +23,14 @@ Most Greenhouse scrapers ignore the native department filtering that Greenhouse 
 ```json
 {
   "urls": [
-    { "url": "https://job-boards.greenhouse.io/webflow?departments[]=59798" }
+    { 
+      "url": "https://job-boards.greenhouse.io/webflow?departments[]=59798",
+      "maxJobs": 20
+    },
+    {
+      "url": "https://job-boards.greenhouse.io/stripe",
+      "maxJobs": 10
+    }
   ],
   "proxy": {
     "useApifyProxy": true
@@ -33,8 +40,41 @@ Most Greenhouse scrapers ignore the native department filtering that Greenhouse 
 
 ### Parameters
 
-- **urls** (required): Array of Greenhouse job board URLs. You can include department filters in the URL.
+- **urls** (required): Array of Greenhouse job board URLs. Each URL object supports:
+  - `url` (required): Greenhouse job board URL (can include department filters)
+  - `maxJobs` (optional): Maximum number of jobs to scrape from this board (useful for multi-company runs)
 - **proxy** (optional): Proxy configuration. Defaults to using Apify proxy.
+
+### Examples
+
+**Scrape all jobs from a single company:**
+```json
+{
+  "urls": [
+    { "url": "https://job-boards.greenhouse.io/webflow" }
+  ]
+}
+```
+
+**Scrape specific departments only:**
+```json
+{
+  "urls": [
+    { "url": "https://job-boards.greenhouse.io/webflow?departments[]=59798&departments[]=59800" }
+  ]
+}
+```
+
+**Multi-company with different limits:**
+```json
+{
+  "urls": [
+    { "url": "https://job-boards.greenhouse.io/webflow", "maxJobs": 20 },
+    { "url": "https://job-boards.greenhouse.io/stripe", "maxJobs": 10 },
+    { "url": "https://job-boards.greenhouse.io/notion", "maxJobs": 15 }
+  ]
+}
+```
 
 ## Output
 
