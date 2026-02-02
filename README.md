@@ -291,6 +291,12 @@ cat ./apify_storage/datasets/default/*.json
 5. Parses enhanced fields (salary, location array, remote/hybrid flags)
 6. Saves results to the dataset
 
+## Related Scrapers
+
+Looking for other ATS platforms? Check out:
+
+- **[Ashby Job Scraper](https://apify.com/dalleyne/ashby-job-scraper)** - Scrape Ashby job boards (Buffer, Zapier, RevenueCat, etc.) with team filtering
+
 ## License
 
 MIT
