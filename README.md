@@ -90,9 +90,12 @@ Each URL can have its own filters:
 
 ### Scheduled Runs
 
-The `daysBack` parameter is built for running this scraper on a schedule and only fetching new jobs:
+Keeping a board fresh is two parts that work together:
 
-**Weekly scraper (runs every Monday):**
+1. **A Schedule sets *when* the actor runs.** In Apify Console, open **Schedules → Create new**, add this actor (or a saved task with your input), and give it a cron expression. Weekly Monday 6am is `0 6 * * 1`; Monday and Thursday is `0 6 * * 1,4`. The schedule is what makes runs recur — the input JSON alone does not.
+2. **`daysBack` sets *how far back* each run looks**, filtering jobs by their `updated_at` timestamp. Match it to your cron cadence so each run picks up everything new since the last one without re-storing old jobs: a weekly cron pairs with `daysBack: 7`, a twice-weekly cron with `daysBack: 4`. You only pay for jobs that pass the filter.
+
+**Input for a weekly schedule (`0 6 * * 1`):**
 ```json
 {
   "urls": [
@@ -105,7 +108,7 @@ The `daysBack` parameter is built for running this scraper on a schedule and onl
 }
 ```
 
-**Twice-weekly scraper (runs Monday and Thursday):**
+**Input for a twice-weekly schedule (`0 6 * * 1,4`):**
 ```json
 {
   "urls": [
@@ -118,7 +121,7 @@ The `daysBack` parameter is built for running this scraper on a schedule and onl
 }
 ```
 
-Jobs are filtered by their `updated_at` timestamp, and you only pay for jobs that pass the date filter.
+Tip: set `daysBack` one or two days longer than your cron gap (e.g. `daysBack: 9` on a weekly cron) so a delayed or skipped run doesn't leave a gap in coverage. Duplicates across runs are expected — dedupe on the `id` field downstream.
 
 ### Multiple companies with different filters
 
