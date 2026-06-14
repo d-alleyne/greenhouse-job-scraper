@@ -24,10 +24,10 @@ This actor uses Greenhouse's department API to filter first. A typical mid-size 
 
 | Approach | Jobs stored | Cost per board |
 |----------|------------|----------------|
-| Fetch-everything scraper at $0.99/1,000 | 300 | ~$0.30, plus your own filtering work |
+| Fetch-everything scraper at ~$2.00/1,000 | 300 | ~$0.60, plus your own filtering work |
 | This scraper at $2.00/1,000 with `departments` set | ~20 | ~$0.04, already clean |
 
-The headline price is higher. The cost per **relevant** job is typically 5 to 15 times lower, and your dataset arrives ready to use.
+Same per-result price, but you store only the jobs you asked for. The cost per **relevant** job is typically 10 to 15 times lower, and your dataset arrives ready to use.
 
 ## Pricing
 
