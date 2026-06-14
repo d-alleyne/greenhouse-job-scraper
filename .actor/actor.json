@@ -9,5 +9,41 @@
     "readme": "./README.md",
     "categories": ["JOBS"],
     "input": "./INPUT_SCHEMA.json",
-    "output": "./output_schema.json"
+    "output": "./output_schema.json",
+    "storages": {
+        "dataset": {
+            "actorSpecification": 1,
+            "title": "Greenhouse Job Listings",
+            "views": {
+                "overview": {
+                    "title": "Overview",
+                    "transformation": {
+                        "fields": [
+                            "title",
+                            "company",
+                            "department",
+                            "location",
+                            "type",
+                            "salary",
+                            "publishedAt",
+                            "postingUrl"
+                        ]
+                    },
+                    "display": {
+                        "component": "table",
+                        "properties": {
+                            "title": { "label": "Job Title", "format": "text" },
+                            "company": { "label": "Company", "format": "text" },
+                            "department": { "label": "Department", "format": "text" },
+                            "location": { "label": "Location", "format": "text" },
+                            "type": { "label": "Type", "format": "text" },
+                            "salary": { "label": "Salary", "format": "object" },
+                            "publishedAt": { "label": "Updated", "format": "date" },
+                            "postingUrl": { "label": "URL", "format": "link" }
+                        }
+                    }
+                }
+            }
+        }
+    }
 }

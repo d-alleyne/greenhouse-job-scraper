@@ -6,7 +6,7 @@
         "urls": {
             "title": "Job Board URLs",
             "type": "array",
-            "description": "Greenhouse job board URLs to scrape. Use simple URLs or add per-board filters in JSON mode. See README for examples.",
+            "description": "Greenhouse job board URLs to scrape. Each entry is an object with a required `url` and optional per-board filters (use the JSON tab): `departments` (array of integer department IDs to keep, filtered before fetching job details), `maxJobs` (integer cap per board), `daysBack` (integer; only jobs updated in the last N days). Example: {\"url\": \"https://job-boards.greenhouse.io/gitlab\", \"departments\": [4011044002], \"maxJobs\": 20, \"daysBack\": 7}. See README for how to find department IDs.",
             "editor": "requestListSources",
             "placeholderKey": "url",
             "placeholderValue": "https://job-boards.greenhouse.io/automatticcareers",
