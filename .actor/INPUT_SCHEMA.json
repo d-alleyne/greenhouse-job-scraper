@@ -15,6 +15,12 @@
             "prefill": [
                 {
                     "url": "https://job-boards.greenhouse.io/automatticcareers"
+                },
+                {
+                    "url": "https://job-boards.greenhouse.io/automatticcareers",
+                    "departments": [307170],
+                    "maxJobs": 25,
+                    "daysBack": 30
                 }
             ]
         }
