@@ -3,7 +3,7 @@
     "name": "greenhouse-job-scraper",
     "title": "Greenhouse Job Scraper & API",
     "description": "Scrape Greenhouse ATS jobs via API with department filtering. Pull live roles from Automattic, GitLab and more. Built for job boards and AI agents.",
-    "version": "1.0",
+    "version": "1.2",
     "license": "MIT",
     "dockerfile": "./Dockerfile",
     "readme": "./README.md",

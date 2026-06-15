@@ -1,35 +1,32 @@
-import { Actor } from 'apify';
-import { CheerioCrawler } from 'crawlee';
+import { Actor, log } from 'apify';
 
-await Actor.init();
+await Actor.main(async () => {
+    const input = await Actor.getInput() || {};
+    const { urls = [] } = input;
 
-const input = await Actor.getInput() || {};
-const { urls = [], proxy = { useApifyProxy: true } } = input;
+    if (!urls || urls.length === 0) {
+        throw new Error('No URLs provided. Please add at least one Greenhouse job board URL.');
+    }
 
-if (!urls || urls.length === 0) {
-    throw new Error('No URLs provided. Please add at least one Greenhouse job board URL.');
-}
+    for (const item of urls) {
+        // Resolve per-board config with top-level fields taking precedence over userData.
+        const { url: boardUrl, maxJobs: maxJobsInput, departments: departmentsInput, daysBack: daysBackInput, userData = {} } = item;
+        const rawMaxJobs = maxJobsInput !== undefined ? maxJobsInput : userData.maxJobs;
+        const rawDepartments = departmentsInput !== undefined ? departmentsInput : userData.departments;
+        const rawDaysBack = daysBackInput !== undefined ? daysBackInput : userData.daysBack;
 
-const proxyConfiguration = proxy.useApifyProxy
-    ? await Actor.createProxyConfiguration()
-    : undefined;
+        const url = new URL(boardUrl);
 
-const crawler = new CheerioCrawler({
-    proxyConfiguration,
-    maxRequestsPerCrawl: 1000,
-    async requestHandler({ request, $, log }) {
-        const url = new URL(request.url);
-        
         // Extract board token from URL (e.g., "webflow" from job-boards.greenhouse.io/webflow)
         const boardToken = url.pathname.split('/')[1];
-        
+
         if (!boardToken) {
-            log.error(`Could not extract board token from URL: ${request.url}`);
-            return;
+            log.error(`Could not extract board token from URL: ${boardUrl}`);
+            continue;
         }
 
         // Extract maxJobs limit if provided (validate it's a non-negative integer, 0 means unlimited)
-        let maxJobs = request.userData?.maxJobs;
+        let maxJobs = rawMaxJobs;
         if (maxJobs === 0 || maxJobs === null || maxJobs === undefined) {
             maxJobs = null; // Treat 0, null, undefined as unlimited
         } else if (typeof maxJobs !== 'number' || maxJobs < 0 || !Number.isInteger(maxJobs)) {
@@ -38,7 +35,7 @@ const crawler = new CheerioCrawler({
         }
 
         // Extract daysBack filter if provided (only fetch jobs updated in last N days)
-        let daysBack = request.userData?.daysBack;
+        let daysBack = rawDaysBack;
         let cutoffDate = null;
         if (daysBack !== null && daysBack !== undefined) {
             if (typeof daysBack === 'number' && daysBack > 0 && Number.isInteger(daysBack)) {
@@ -52,17 +49,17 @@ const crawler = new CheerioCrawler({
 
         // Build the API URL - use departments endpoint to get jobs organized by department
         const apiUrl = `https://boards-api.greenhouse.io/v1/boards/${boardToken}/departments`;
-        
-        // Get department filter from request userData (passed via JSON input)
-        const departments = request.userData?.departments || [];
-        const departmentIdNumbers = Array.isArray(departments) 
+
+        // Get department filter from this board's config (passed via JSON input)
+        const departments = rawDepartments || [];
+        const departmentIdNumbers = Array.isArray(departments)
             ? departments.filter(id => Number.isInteger(id) && id > 0)
             : [];
-        
+
         if (departments.length > 0 && departmentIdNumbers.length === 0) {
             log.warning(`Invalid departments array: ${JSON.stringify(departments)}. Must be integers > 0.`);
         }
-        
+
         log.info(`Fetching jobs from ${boardToken}`, { departments: departmentIdNumbers, maxJobs });
 
         try {
@@ -71,7 +68,7 @@ const crawler = new CheerioCrawler({
             if (!response.ok) {
                 throw new Error(`API request failed: ${response.status} ${response.statusText}`);
             }
-            
+
             const data = await response.json();
             let departments = data.departments || [];
 
@@ -88,7 +85,7 @@ const crawler = new CheerioCrawler({
             let filteredByDate = 0;
             departmentLoop: for (const department of departments) {
                 const jobs = department.jobs || [];
-                
+
                 for (const job of jobs) {
                     // Filter by date if cutoffDate is set
                     if (cutoffDate) {
@@ -104,11 +101,11 @@ const crawler = new CheerioCrawler({
                         log.info(`Reached maxJobs limit of ${maxJobs}, stopping`);
                         break departmentLoop;
                     }
-                    
+
                     // Fetch full job details to get description and metadata
                     const jobDetailUrl = `https://boards-api.greenhouse.io/v1/boards/${boardToken}/jobs/${job.id}`;
                     log.debug(`Fetching full details for job ${job.id}: ${job.title}`);
-                    
+
                     try {
                         const jobResponse = await fetch(jobDetailUrl);
                         if (!jobResponse.ok) {
@@ -119,7 +116,7 @@ const crawler = new CheerioCrawler({
                                 ? locationRaw.split(';').map(l => l.trim()).filter(Boolean)
                                 : [];
                             const locationLower = locationRaw.toLowerCase();
-                            
+
                             const jobData = {
                                 id: job.id,
                                 company: boardToken,
@@ -142,20 +139,20 @@ const crawler = new CheerioCrawler({
                             totalJobs++;
                             continue;
                         }
-                        
+
                         const fullJob = await jobResponse.json();
-                        
+
                         // Parse locations into clean array (Greenhouse uses semicolons as delimiter)
                         const locationRaw = job.location?.name || '';
                         const locationsList = locationRaw
                             ? locationRaw.split(';').map(l => l.trim()).filter(Boolean)
                             : [];
-                        
+
                         // Detect remote/hybrid from location string
                         const locationLower = locationRaw.toLowerCase();
                         const isRemote = locationLower.includes('remote');
                         const isHybrid = locationLower.includes('hybrid');
-                        
+
                         // Extract basic salary info with regex
                         // Handles: $80k-$120k, $80,000-$120,000, $80000-$120000, £50k-£70k, €60k-€80k
                         const salaryMatch = (fullJob.content || '').match(/([£€\$])(\d{1,3}(?:,\d{3})*|\d+)[kK]?\s*[-–]\s*\1(\d{1,3}(?:,\d{3})*|\d+)[kK]?/);
@@ -167,7 +164,7 @@ const crawler = new CheerioCrawler({
                                 // If it ends with 'k' or is 3 digits or less, multiply by 1000
                                 return str.match(/[kK]/) || num < 1000 ? num * 1000 : num;
                             };
-                            
+
                             // Detect currency from symbol, then check context for $ (could be USD, CAD, AUD, etc.)
                             let currency = salaryMatch[1] === '£' ? 'GBP' : salaryMatch[1] === '€' ? 'EUR' : 'USD';
                             if (salaryMatch[1] === '$') {
@@ -180,7 +177,7 @@ const crawler = new CheerioCrawler({
                                 else if (/\bGBP\b|UK|United Kingdom/i.test(context)) currency = 'GBP';
                                 // Otherwise defaults to USD
                             }
-                            
+
                             salary = {
                                 min: parseAmount(salaryMatch[2]),
                                 max: parseAmount(salaryMatch[3]),
@@ -188,7 +185,7 @@ const crawler = new CheerioCrawler({
                                 raw: salaryMatch[0],
                             };
                         }
-                        
+
                         // Collect all metadata for LLM processing
                         const metadata = {};
                         if (fullJob.metadata && Array.isArray(fullJob.metadata)) {
@@ -198,29 +195,29 @@ const crawler = new CheerioCrawler({
                                 }
                             });
                         }
-                        
+
                         const jobData = {
                             id: job.id,
                             company: boardToken, // Board token is typically the company identifier
                             type: metadata['Employment Type'] || null,
                             title: job.title,
                             description: fullJob.content || '',
-                            
+
                             // Location fields
                             location: locationRaw, // Raw location string for LLM parsing
                             locations: locationsList, // Parsed array
                             isRemote,
                             isHybrid,
-                            
+
                             // Salary (basic regex, LLM can enhance locally)
                             salary,
-                            
+
                             // Department
                             department: department.name,
-                            
+
                             // All metadata for flexible LLM processing
                             metadata,
-                            
+
                             // URLs and dates
                             postingUrl: job.absolute_url,
                             applyUrl: job.absolute_url,
@@ -242,25 +239,7 @@ const crawler = new CheerioCrawler({
             }
         } catch (error) {
             log.error(`Failed to fetch jobs for ${boardToken}: ${error.message}`);
-            throw error;
+            // Continue with the next board instead of aborting the whole run.
         }
-    },
+    }
 });
-
-// Add URLs to the crawler with departments, maxJobs, and daysBack in userData
-const requests = urls.map((item) => {
-    const { url, maxJobs, departments, daysBack, userData = {} } = item;
-    return {
-        url,
-        userData: {
-            ...userData,
-            // Top-level fields take precedence over userData
-            maxJobs: maxJobs !== undefined ? maxJobs : userData.maxJobs,
-            departments: departments !== undefined ? departments : userData.departments,
-            daysBack: daysBack !== undefined ? daysBack : userData.daysBack
-        }
-    };
-});
-await crawler.run(requests);
-
-await Actor.exit();

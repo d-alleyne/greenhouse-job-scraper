@@ -1,6 +1,6 @@
 {
   "name": "greenhouse-job-scraper",
-  "version": "1.0.0",
+  "version": "1.2.0",
   "description": "Open source Greenhouse Job Scraper with department filtering support",
   "type": "module",
   "main": "src/main.js",
@@ -16,8 +16,6 @@
     "url": "https://github.com/d-alleyne/greenhouse-job-scraper.git"
   },
   "dependencies": {
-    "apify": "^3.5.3",
-    "crawlee": "^3.15.3",
-    "playwright": "^1.58.1"
+    "apify": "^3.5.3"
   }
 }
