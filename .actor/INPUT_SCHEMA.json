@@ -14,7 +14,7 @@
             "patternValue": "https://job-boards\\.greenhouse\\.io/.+",
             "prefill": [
                 {
-                    "url": "https://job-boards.greenhouse.io/automatticcareers"
+                    "url": "https://job-boards.greenhouse.io/gitlab"
                 },
                 {
                     "url": "https://job-boards.greenhouse.io/automatticcareers",
