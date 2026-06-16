@@ -2,6 +2,21 @@
 
 All notable changes to this project will be documented in this file.
 
+## [1.3.0] - 2026-06-16
+
+### Fixed
+- Salary parser no longer multiplies bare sub-1000 numbers by 1000 (e.g. `$120-$150` is no longer read as `$120k-$150k`); the ×1000 scaling applies only when the matched amount carries a `k`.
+- `daysBack` now excludes jobs with a missing or invalid date instead of silently keeping them, so scheduled runs don't re-emit undated jobs.
+- A thrown detail-fetch error now stores the job's basic data instead of silently dropping the job.
+- A malformed board URL is skipped instead of aborting the whole run.
+- Department filter accepts string IDs (e.g. `"307170"`), not just integers.
+
+### Changed
+- `publishedAt` is normalized to ISO 8601 (UTC).
+- Output records have a consistent key set (removed the stray `departments` array that only appeared on detail-fetch-fallback rows).
+- All HTTP requests now have a 30-second timeout.
+- The run fails if every board errors and nothing is stored (a legitimately empty filtered result still succeeds).
+
 ## [1.2.0] - 2026-06-14
 
 ### Changed
