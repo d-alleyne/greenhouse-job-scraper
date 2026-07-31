@@ -1,6 +1,41 @@
 import { Actor, log } from 'apify';
 
 const FETCH_TIMEOUT_MS = 30_000;
+const RETRY_ATTEMPTS = 3;
+const RETRY_BASE_MS = 500;
+
+const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
+
+/**
+ * fetch() with retry on transient failures: rate limits (429), server errors (5xx),
+ * and network/timeout errors. Other 4xx are permanent (404 = the board no longer
+ * exists), so they come straight back rather than burning retries on a lost cause.
+ *
+ * Returns the Response whenever one was obtained — including a non-OK one, so the
+ * caller keeps its own `!res.ok` handling (the job detail fetch falls back to basic
+ * data rather than failing). Only a network/timeout error with every attempt
+ * exhausted throws.
+ *
+ * @param {string} url
+ * @param {RequestInit} [init] fetch options; `signal` is always set by this helper
+ * @param {number} [attempts]
+ * @returns {Promise<Response>}
+ */
+async function fetchWithRetry(url, init = {}, attempts = RETRY_ATTEMPTS) {
+    let lastError;
+    for (let i = 0; i < attempts; i++) {
+        if (i > 0) await sleep(RETRY_BASE_MS * 2 ** (i - 1));
+        try {
+            const response = await fetch(url, { ...init, signal: AbortSignal.timeout(FETCH_TIMEOUT_MS) });
+            const transient = response.status === 429 || response.status >= 500;
+            if (!transient || i === attempts - 1) return response;
+            lastError = new Error(`Request failed: ${response.status} ${response.statusText}`);
+        } catch (err) {
+            lastError = err;
+        }
+    }
+    throw lastError;
+}
 
 /** Normalize any date string to ISO 8601, or null if missing/invalid. */
 function toIso(s) {
@@ -106,7 +141,7 @@ await Actor.main(async () => {
         let totalJobs = 0;
         let filteredByDate = 0;
         try {
-            const response = await fetch(apiUrl, { signal: AbortSignal.timeout(FETCH_TIMEOUT_MS) });
+            const response = await fetchWithRetry(apiUrl);
             if (!response.ok) {
                 throw new Error(`API request failed: ${response.status} ${response.statusText}`);
             }
@@ -137,7 +172,7 @@ await Actor.main(async () => {
 
                     const jobDetailUrl = `https://boards-api.greenhouse.io/v1/boards/${boardToken}/jobs/${job.id}`;
                     try {
-                        const jobResponse = await fetch(jobDetailUrl, { signal: AbortSignal.timeout(FETCH_TIMEOUT_MS) });
+                        const jobResponse = await fetchWithRetry(jobDetailUrl);
                         if (!jobResponse.ok) {
                             log.warning(`Detail fetch ${jobResponse.status} for job ${job.id}; storing basic data`);
                             await Actor.pushData(basicJob(job, department, boardToken));
