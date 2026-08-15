@@ -16,6 +16,8 @@ Scrape Greenhouse ATS job boards via API and get clean, structured job data with
 - ✅ 98%+ run success rate (the live stat is visible right on this page)
 - ✅ 100% open source (MIT). Audit the code on [GitHub](https://github.com/d-alleyne/greenhouse-job-scraper)
 
+> **Scraping mixed ATS URLs?** [Multi-ATS Job Scraper & API](https://apify.com/dalleyne/ats-job-scraper) processes Greenhouse, Ashby, and Lever together and returns one normalized schema. For Greenhouse-only workloads, continue with this Actor.
+
 ## Why filtering before storing saves you money
 
 Most Greenhouse scrapers fetch every job on a board and leave the filtering to you. You pay for Sales, HR, and Support listings you never wanted.
@@ -299,6 +301,8 @@ See [CHANGELOG.md](https://github.com/d-alleyne/greenhouse-job-scraper/blob/main
 Looking for other ATS platforms?
 
 - **[Ashby Job Scraper & API](https://apify.com/dalleyne/ashby-job-scraper)** - Scrape Ashby job boards (Buffer, Zapier, RevenueCat, etc.) with team filtering and applicant location requirements
+- **[Lever Job Scraper & API](https://apify.com/dalleyne/lever-job-scraper)** - Scrape Lever job boards (Anchorage Digital, Match Group, etc.) with department and team filtering
+- **[Multi-ATS Job Scraper & API](https://apify.com/dalleyne/ats-job-scraper)** - All three platforms in one run, with the ATS auto-detected per URL and a single normalized output schema
 
 ## Found this useful?
 
